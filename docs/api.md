@@ -10,7 +10,7 @@
 {
     "data":null,
     "msg":"错误信息，直接显示给用户",
-    "status":401 // 对应的状态码
+    "status":401
 }
 ```
 
@@ -34,7 +34,7 @@ POST /user
 
 ```json
 {
-	"username": "用户名",
+    "username": "用户名",
     "password": "密码",
     "check_pwd": "二次验证密码"
 }
@@ -44,7 +44,7 @@ POST /user
 
 ```json
 {
-	"data": null,
+    "data": null,
     "msg": "OK",
     "status": 200
 }
@@ -78,7 +78,7 @@ PUT /user/password
 
 ```json
 {
-	"data": null,
+    "data": null,
     "msg": "OK",
     "status": 200
 }
@@ -124,12 +124,12 @@ GET /user
 
 ```json
 {
-	"data": {
-	    "username": "用户名",
-	    "uuid": "uuid"
-	},
-	"msg": "OK",
-	"status": 200
+    "data": {
+        "username": "用户名",
+        "uuid": "uuid"
+    },
+    "msg": "OK",
+    "status": 200
 }
 ```
 
@@ -160,12 +160,12 @@ POST /session
 
 ```json
 {
-	"data": {
-	    "uuid": "uuid",
-	    "username":"用户名"
-	},
-	"msg": "OK",
-	"status": 200
+    "data": {
+        "uuid": "uuid",
+        "username":"用户名"
+    },
+    "msg": "OK",
+    "status": 200
 }
 ```
 
@@ -185,9 +185,9 @@ DELETE /session
 
 ```json
 {
-	"data": null,
-	"msg": "OK",
-	"status": 200
+    "data": null,
+    "msg": "OK",
+    "status": 200
 }
 ```
 
@@ -231,12 +231,10 @@ GET /posts?uuid={uuid}&last_id={last_id}&limit={limit}
 	                    "username": "发帖人用户名",
 	                    "uuid": "发帖人uuid"
 	                }
-	                ...
 	            ]
 	        },
-	        ...
 	    ]
-	}
+	},
 	"msg": "OK",
 	"status": 200
 }
@@ -278,7 +276,6 @@ GET /posts/{post_id}?last_comment_id={last_comment_id}&limit={limit}
 	            "username": "发帖人用户名",
 	            "uuid"': "发帖人uuid"
 	        }
-	        ...
 	    ]
 	},
 	"msg": "OK",
@@ -430,7 +427,6 @@ GET /comments?parent_id={parent_id}&type={type}&last_id={last_id}&limit={limit}
 	            "username": "发帖人用户名",
 	            "uuid": "发帖人uuid"
 	        }
-	        ...
 	    ]
 	},
 	"msg": "OK",
@@ -474,9 +470,8 @@ GET /comments/{comment_id}?last_comment_id={last_comment_id}&limit={limit}
 		        "content": "评论内容",
 		        "comments_num": "评论数目",
 		        "username": "发帖人用户名",
-		        "uuid"': "发帖人uuid"
+		        "uuid": "发帖人uuid"
 		    }
-		    ...
 		]
 	},
 	"msg": "OK",

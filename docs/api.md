@@ -274,7 +274,7 @@ GET /posts/{post_id}?last_comment_id={last_comment_id}&limit={limit}
 	            "content": "评论内容",
 	            "comments_num": "评论数目",
 	            "username": "发帖人用户名",
-	            "uuid"': "发帖人uuid"
+	            "uuid": "发帖人uuid"
 	        }
 	    ]
 	},

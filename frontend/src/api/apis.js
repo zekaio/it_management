@@ -9,16 +9,16 @@ export let apis = {};
  * POST /user
  * @param {string} username - 用户名
  * @param {string} password - 密码
- * @param {string} checkPwd - 再次输入密码
+ * @param {string} check_pwd - 再次输入密码
  */
-apis.register = (username, password, checkPwd) => {
+apis.register = (username, password, check_pwd) => {
   return instance({
     url: '/user',
     method: 'post',
     data: JSON.stringify({
       username,
       password,
-      checkPwd,
+      check_pwd,
     }),
   });
 };
@@ -27,17 +27,17 @@ apis.register = (username, password, checkPwd) => {
  * 修改密码
  * PUT /user/password
  * @param {string} password - 新密码
- * @param {string} checkPwd - 二次验证密码
- * @param {string} oldPwd - 旧密码
+ * @param {string} check_pwd - 二次验证密码
+ * @param {string} old_pwd - 旧密码
  */
-apis.updatePassword = (password, checkPwd, oldPwd) => {
+apis.updatePassword = (password, check_pwd, old_pwd) => {
   return instance({
     url: '/user/password',
     method: 'put',
     data: JSON.stringify({
       password,
-      checkPwd,
-      oldPwd,
+      check_pwd,
+      old_pwd,
     }),
   });
 };
@@ -207,16 +207,16 @@ apis.getComment = (commentId, lastCommentId, limit) => {
 /**
  * 发表评论
  * POST /comments
- * @param {number} parentId - 被评论的帖子或评论的id
+ * @param {number} parent_id - 被评论的帖子或评论的id
  * @param {number} type - 是什么的评论，0是帖子，1是评论
  * @param {string} content - 内容
  */
-apis.saveComment = (parentId, type, content) => {
+apis.saveComment = (parent_id, type, content) => {
   return instance({
     url: '/comments',
     method: 'post',
     data: JSON.stringify({
-      parentId,
+      parent_id,
       type,
       content,
     }),

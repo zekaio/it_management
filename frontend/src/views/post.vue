@@ -1,12 +1,20 @@
 <template>
   <div>
     <div>帖子详情页面</div>
-    <div>帖子id：{{ $route.params.post_id }}</div>
+    <div>帖子id：{{ $route.params.postId }}</div>
   </div>
 </template>
 
 <script>
-export default {};
+// import { apis } from '../api/apis';
+export default {
+  name: 'post',
+  data() {
+    return {};
+  },
+  methods: {},
+  async mounted() {},
+};
 </script>
 
-<style></style>
+<style scoped></style>

@@ -95,7 +95,7 @@ export default {
         });
         return;
       }, 10000);
-      apis.getPosts().then(res => {
+      apis.getPosts().then((res) => {
         console.log(res);
         this.posts = res.data.data;
         console.log(this.posts);
@@ -115,7 +115,7 @@ export default {
     // 获取更多帖子
     getPosts() {
       if (this.posts.length == 0) {
-        apis.getPosts().then(res => {
+        apis.getPosts().then((res) => {
           console.log(res);
           this.posts = res.data.data;
           console.log(this.posts);
@@ -124,7 +124,7 @@ export default {
         });
       } else {
         console.log('加载新帖子');
-        apis.getPosts(this.posts[this.posts.length - 1].post_id).then(res => {
+        apis.getPosts(this.posts[this.posts.length - 1].post_id).then((res) => {
           console.log(res);
           if (res.data.data.length == 0) {
             this.finished = true;

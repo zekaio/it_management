@@ -12,7 +12,7 @@ export default {
   async mounted() {
     apis
       .getUserInfo()
-      .then(res => {
+      .then((res) => {
         if (this.$route.path == '/') {
           this.$router.push({
             path: '/index',
@@ -23,7 +23,7 @@ export default {
         console.log('username: ' + localStorage.getItem('username'));
         console.log('uuid: ' + localStorage.getItem('uuid'));
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.response.status == 404) {
           Toast.fail({
             message: '用户不存在，请重新登陆',

@@ -1,19 +1,19 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import login from '../views/login.vue';
-import register from '../views/register.vue';
-import index from '../views/index.vue';
-import post from '../views/post.vue';
-import edit from '../views/edit.vue';
-import search from '../views/search.vue';
-import user from '../views/user.vue';
+import login from './views/login.vue';
+import register from './views/register.vue';
+import index from './views/index.vue';
+import post from './views/post.vue';
+import edit from './views/edit.vue';
+import search from './views/search.vue';
+import user from './views/user.vue';
 
 Vue.use(VueRouter);
 
 const routerPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch(error => error);
+  return routerPush.call(this, location).catch((error) => error);
 };
 
 const routes = [
@@ -37,13 +37,13 @@ const routes = [
   },
   // 帖子详情
   {
-    path: '/post/:post_id/detail',
+    path: '/post/:postId/detail',
     name: 'post',
     component: post,
   },
   // 编辑
   {
-    path: '/post/:post_id?/edit',
+    path: '/post/:postId?/edit',
     name: 'edit',
     component: edit,
   },

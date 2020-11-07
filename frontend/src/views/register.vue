@@ -19,9 +19,9 @@
         :rules="[{ required: true, message: '请填写密码' }]"
       />
       <van-field
-        v-model="check_pwd"
+        v-model="checkPwd"
         type="password"
-        name="check_pwd"
+        name="checkPwd"
         label="确认密码"
         placeholder="确认密码"
         :rules="[{ required: true, message: '请确认密码' }]"
@@ -54,13 +54,13 @@ export default {
     return {
       username: '',
       password: '',
-      check_pwd: '',
+      checkPwd: '',
     };
   },
   methods: {
     onSubmit(values) {
       apis
-        .register(values.username, values.password, values.check_pwd)
+        .register(values.username, values.password, values.checkPwd)
         .then(() => {
           Toast.success({
             message: '注册成功',
@@ -69,7 +69,7 @@ export default {
             path: '/login',
           });
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.response.status == 400 || err.response.status == 409) {
             Toast.fail({
               message: err.response.data.msg,

@@ -2,7 +2,7 @@
   <div class="edit">
     <div>编辑页面</div>
     <div>
-      帖子id：{{ $route.params.post_id ? $route.params.post_id : '新帖子' }}
+      帖子id：{{ $route.params.postId ? $route.params.postId : '新帖子' }}
     </div>
     <van-field
       v-model="message"
@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     submit() {
-      apis.savePost(this.message).then(res => {
+      apis.savePost(this.message).then((res) => {
         Toast({
           message: `发表成功，id为${res.data.data.post_id}`,
         });

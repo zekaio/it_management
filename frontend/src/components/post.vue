@@ -23,7 +23,7 @@
       <van-goods-action-icon
         style="margin: auto;"
         icon="chat-o"
-        :text="comments_num"
+        :text="commentsNum"
         @click="toDetail"
       />
     </van-goods-action>
@@ -104,7 +104,7 @@ export default {
     isOwner: function() {
       return localStorage.getItem('uuid') == this.post.uuid;
     },
-    comments_num: function() {
+    commentsNum: function() {
       return this.post.comments_num + '';
     },
   },

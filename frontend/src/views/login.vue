@@ -57,7 +57,7 @@ export default {
             path: '/index',
           });
         })
-        .catch(err => {
+        .catch((err) => {
           Toast.fail({
             message: err.response.data.msg,
           });

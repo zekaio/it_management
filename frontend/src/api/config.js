@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { Toast } from 'vant';
 import router from '../router';
-
-const baseURL = 'http://127.0.0.1:5000';
+import { baseURL } from '../config';
 
 // axios配置
 const instance = axios.create({
@@ -14,10 +13,10 @@ const instance = axios.create({
 });
 
 instance.interceptors.response.use(
-  res => {
+  (res) => {
     return Promise.resolve(res);
   },
-  err => {
+  (err) => {
     if (!err.response) {
       Toast.fail({
         message: '服务器无法响应',

@@ -59,7 +59,8 @@ export default {
         })
         .catch((err) => {
           Toast.fail({
-            message: err.response.data.msg,
+            message:
+              err.response.data.message || `未知错误${err.response.data}`,
           });
         });
     },

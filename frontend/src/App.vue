@@ -35,7 +35,8 @@ export default {
           });
         } else {
           Toast.fail({
-            message: `未知错误，错误码${err.response.status}`,
+            message:
+              err.response.data.message || `未知错误${err.response.data}`,
           });
         }
       });

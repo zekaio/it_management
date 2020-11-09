@@ -8,6 +8,6 @@ class HttpError(Exception):
     def to_dict(self):
         return {
             'status': self.status_code,
-            'msg': self.message,
+            'message': self.message,
             'data': self.data
         }

@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import login from './views/login.vue';
 import register from './views/register.vue';
 import index from './views/index.vue';
-import post from './views/post.vue';
+import detail from './views/detail.vue';
 import edit from './views/edit.vue';
 import search from './views/search.vue';
 import user from './views/user.vue';
@@ -39,7 +39,7 @@ const routes = [
   {
     path: '/post/:postId/detail',
     name: 'post',
-    component: post,
+    component: detail,
   },
   // 编辑
   {

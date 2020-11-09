@@ -23,6 +23,7 @@ import {
   List,
   PullRefresh,
   Search,
+  Empty,
 } from 'vant';
 
 Vue.config.productionTip = false;
@@ -47,7 +48,8 @@ Vue.use(Form)
   .use(NavBar)
   .use(List)
   .use(PullRefresh)
-  .use(Search);
+  .use(Search)
+  .use(Empty);
 
 new Vue({
   router,

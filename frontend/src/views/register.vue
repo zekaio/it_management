@@ -70,15 +70,10 @@ export default {
           });
         })
         .catch((err) => {
-          if (err.response.status == 400 || err.response.status == 409) {
-            Toast.fail({
-              message: err.response.data.msg,
-            });
-          } else {
-            Toast.fail({
-              message: `未知错误，错误码${err.response.status}`,
-            });
-          }
+          Toast.fail({
+            message:
+              err.response.data.message || `未知错误${err.response.data}`,
+          });
         });
     },
   },

@@ -32,7 +32,7 @@
         <!-- tabs -->
         <van-sticky :offset-top="46">
           <van-tabs v-model="tabActivate">
-            <van-tab :title="'评论  ' + post.comments_num"></van-tab>
+            <van-tab :title="'评论 ' + post.comments_num"></van-tab>
             <van-tab title="" disabled></van-tab>
             <van-tab title="" disabled></van-tab>
             <van-tab title="" disabled></van-tab>
@@ -58,6 +58,7 @@
                   :index="index"
                   @deleteCommentEvent="deleteCommentEventHandler"
                   @editCommentEvent="editCommentEventHandler"
+                  @hideInputEvent="hideInputEventHandler"
                 ></Comment>
               </div>
             </van-list>
@@ -65,7 +66,7 @@
         </div>
 
         <!-- 输入框 -->
-        <div class="detail_placeholder">
+        <div class="detail_placeholder" v-show="!hideInput">
           <div class="detail_bar" @click="showComment = true">
             <div class="detail_input">
               <div class="detail_input_placeholder">
@@ -137,6 +138,8 @@ export default {
       refreshing: false, // 上拉刷新
 
       locked: false,
+
+      hideInput: false,
     };
   },
   methods: {
@@ -226,6 +229,10 @@ export default {
       this.commentText = comment.content;
       this.commentMode = { edit: true, comment_id: comment.comment_id };
       this.showComment = true;
+    },
+
+    hideInputEventHandler(hide) {
+      this.hideInput = hide;
     },
   },
   async mounted() {

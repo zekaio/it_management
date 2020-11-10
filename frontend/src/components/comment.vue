@@ -34,6 +34,7 @@
       close-on-popstate
       round
       style="z-index:20000"
+      @closed="onClosed"
     />
   </div>
 </template>
@@ -59,6 +60,7 @@ export default {
   methods: {
     showActionSheet() {
       this.actionSheetShow = true;
+      this.$emit('hideInputEvent', true);
     },
 
     onSelect(item) {
@@ -75,6 +77,10 @@ export default {
           });
         });
       }
+    },
+
+    onClosed() {
+      this.$emit('hideInputEvent', false);
     },
   },
 

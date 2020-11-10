@@ -42,7 +42,7 @@
       name="add"
       color="red"
       style="position: fixed; bottom: 80px; right: 10px; background-color: white; border-radius: 50%"
-      size="60px"
+      size="50px"
       @click="goTo('/post/edit')"
     />
   </div>

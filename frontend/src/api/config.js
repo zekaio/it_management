@@ -52,4 +52,17 @@ instance.interceptors.response.use(
   },
 );
 
+instance.interceptors.request.use(
+  (config) => {
+    if (/get/i.test(config.method)) {
+      config.params = config.params || {};
+      config.params.timestamp = new Date().getTime();
+    }
+    return config;
+  },
+  (err) => {
+    return Promise.reject(err);
+  },
+);
+
 export default instance;

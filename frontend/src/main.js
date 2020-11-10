@@ -24,6 +24,13 @@ import {
   PullRefresh,
   Search,
   Empty,
+  Grid,
+  GridItem,
+  IndexBar,
+  IndexAnchor,
+  Tab,
+  Tabs,
+  Sticky,
 } from 'vant';
 
 Vue.config.productionTip = false;
@@ -49,7 +56,14 @@ Vue.use(Form)
   .use(List)
   .use(PullRefresh)
   .use(Search)
-  .use(Empty);
+  .use(Empty)
+  .use(Grid)
+  .use(GridItem)
+  .use(IndexBar)
+  .use(IndexAnchor)
+  .use(Tab)
+  .use(Tabs)
+  .use(Sticky);
 
 new Vue({
   router,

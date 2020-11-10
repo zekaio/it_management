@@ -51,7 +51,4 @@ body {
   min-height: 100vh;
   min-width: 100vw;
 }
-.van-nav-bar {
-  box-shadow: 0 2px 3px -1px rgb(221, 218, 218);
-}
 </style>

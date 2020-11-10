@@ -183,7 +183,7 @@ apis.deletePost = (postId) => {
  * @param {number} lastId - 已获取评论中最后一个评论的id
  * @param {number} limit - 要获取的数量
  */
-apis.getComments = (parentId, type, lastId, limit) => {
+apis.getComments = (parentId, type, lastId = 0, limit = 5) => {
   return instance({
     url: `/comments?parent_id=${parentId}&type=${type}&last_id=${lastId}&limit=${limit}`,
     method: 'get',
@@ -197,7 +197,7 @@ apis.getComments = (parentId, type, lastId, limit) => {
  * @param {number} lastCommentId - 最后一个评论的id
  * @param {number} limit - 要获取的数目
  */
-apis.getComment = (commentId, lastCommentId, limit) => {
+apis.getComment = (commentId, lastCommentId = 0, limit = 5) => {
   return instance({
     url: `/comments/${commentId}?last_comment_id=${lastCommentId}&limit=${limit}`,
     method: 'get',

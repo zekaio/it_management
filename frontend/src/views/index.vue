@@ -160,4 +160,7 @@ export default {
   background-color: rgb(230, 230, 230);
   min-height: 100vh;
 }
+.van-nav-bar {
+  box-shadow: 0 2px 3px -1px rgb(221, 218, 218);
+}
 </style>

@@ -57,6 +57,7 @@ export default {
       checkPwd: '',
     };
   },
+
   methods: {
     onSubmit(values) {
       apis
@@ -85,6 +86,7 @@ export default {
   min-height: 100vh;
   min-width: 100vw;
 }
+
 .title {
   text-align: center;
   margin: 20px 0;

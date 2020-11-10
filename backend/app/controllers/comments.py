@@ -38,13 +38,14 @@ def get_comments():
         "status": 200
     }
     """
+    ret = database.get_comments(
+        parent_id=request.args.get('parent_id'),
+        _type=request.args.get('type'),
+        last_comment_id=request.args.get('last_id', default=0),
+        limit=request.args.get('limit', default=5))
     return Result.OK().data({
-        'comments': database.get_comments(
-            parent_id=request.args.get('parent_id'),
-            _type=request.args.get('type'),
-            last_comment_id=request.args.get('last_id', default=0),
-            limit=request.args.get('limit', default=5)
-        )}).build()
+        'comments': ret[0], 'comments_num': ret[1]
+    }).build()
 
 
 @comments_bp.route('/<int:comment_id>', methods=['GET'])
@@ -88,7 +89,7 @@ def get_comment(comment_id: int):
             last_comment_id=request.args.get('last_comment_id', default=0),
             limit=request.args.get('limit', default=5)
         )
-    )
+    ).build()
 
 
 @comments_bp.route('', methods=['POST'])
@@ -143,7 +144,7 @@ def update_comment(comment_id: int):
             comment_id=comment_id,
             uuid=session.get('uuid')
         )
-    })
+    }).build()
 
 
 @comments_bp.route('/<int:comment_id>', methods=['DELETE'])

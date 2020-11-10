@@ -329,7 +329,7 @@ def delete_post(post_id: int, uuid: str):
     db.session.commit()
 
 
-def get_comments(parent_id: int, _type: int, limit: int = 5, last_comment_id: int = 0) -> typing.List[dict]:
+def get_comments(parent_id: int, _type: int, limit: int = 5, last_comment_id: int = 0) -> (typing.List[dict], int):
     """
     通过id获取某个帖子或评论的多条评论
     :param: parent_id: 被评论的帖子或评论的id
@@ -349,7 +349,15 @@ def get_comments(parent_id: int, _type: int, limit: int = 5, last_comment_id: in
         ...
     ]
     """
-    return _get_comments(last_comment_id, limit, parent_id=parent_id, type=_type)
+    if int(_type):
+        obj: Comment = (
+            Comment.query.get(parent_id)
+        )
+    else:
+        obj:Post = (
+            Post.query.get(parent_id)
+        )
+    return _get_comments(last_comment_id, limit, parent_id=parent_id, type=_type), obj.comments_num
 
 
 def get_comment(comment_id, last_comment_id: int = 0, limit: int = 5):

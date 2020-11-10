@@ -12,6 +12,7 @@ import user from './views/user.vue';
 Vue.use(VueRouter);
 
 const routerPush = VueRouter.prototype.push;
+
 VueRouter.prototype.push = function push(location) {
   return routerPush.call(this, location).catch((error) => error);
 };

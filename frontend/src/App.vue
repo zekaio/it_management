@@ -9,6 +9,7 @@ import { Toast } from 'vant';
 import { apis } from './api/apis';
 export default {
   name: 'App',
+
   async mounted() {
     apis
       .getUserInfo()
@@ -26,7 +27,7 @@ export default {
       .catch((err) => {
         if (err.response.status == 404) {
           Toast.fail({
-            message: '用户不存在，请重新登陆',
+            message: '用户不存在，请重新登录',
           });
           localStorage.setItem('username', undefined);
           localStorage.setItem('uuid', undefined);

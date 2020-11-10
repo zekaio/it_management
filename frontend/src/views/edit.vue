@@ -1,19 +1,30 @@
 <template>
   <div class="edit">
-    <div>编辑页面</div>
-    <div>
-      帖子id：{{ $route.params.postId ? $route.params.postId : '新帖子' }}
-    </div>
+    <van-nav-bar
+      :title="$route.params.postId ? '编辑帖子' : '发表帖子'"
+      left-arrow
+      @click-left="onClickLeft"
+      placeholder
+      fixed
+      z-index="100"
+      style="margin-bottom: 10px;"
+    >
+      <template #right>
+        <van-button style="height: 80%" type="info" @click="submit()">
+          {{ $route.params.postId ? '修改' : '发表' }}
+        </van-button>
+      </template>
+    </van-nav-bar>
+
     <van-field
       v-model="message"
-      rows="1"
+      rows="10"
       autosize
       type="textarea"
       placeholder="请输入内容"
       maxlength="120"
       show-word-limit
     />
-    <van-button type="info" @click="submit">发表</van-button>
   </div>
 </template>
 
@@ -27,17 +38,42 @@ export default {
     };
   },
   methods: {
-    submit() {
-      apis.savePost(this.message).then((res) => {
-        Toast({
-          message: `发表成功，id为${res.data.data.post_id}`,
-        });
-        this.message = '';
-        this.$router.push({
-          path: '/index',
-        });
-      });
+    onClickLeft() {
+      this.$router.back();
     },
+
+    submit() {
+      let promise;
+      if (this.$route.params.postId) {
+        promise = apis.updatePost(this.$route.params.postId, this.message);
+      } else {
+        promise = apis.savePost(this.message);
+      }
+      promise
+        .then(() => {
+          Toast({
+            message: `${this.$route.params.postId ? '修改' : '发表'}成功`,
+          });
+          this.message = '';
+          this.$router.push({
+            path: '/index',
+          });
+        })
+        .catch((err) => {
+          Toast.fail({
+            message:
+              err.response.data.message || `未知错误${err.response.data}`,
+          });
+        });
+    },
+  },
+
+  async mounted() {
+    if (this.$route.params.postId) {
+      apis.getPost(this.$route.params.postId).then((res) => {
+        this.message = res.data.data.content;
+      });
+    }
   },
 };
 </script>

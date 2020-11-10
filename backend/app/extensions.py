@@ -21,10 +21,6 @@ db = _SQLAlchemy()
 class Model(db.Model):
     __abstract__ = True
 
-    # __table_args__ = {
-    #     'mysql_collate': 'utf8mb4_general_ci'
-    # }
-
     query: Query
 
     created_at = Column(DateTime, server_default=func.now(), comment='创建时间')

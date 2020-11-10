@@ -29,9 +29,11 @@ export default {
     onSearch() {
       Toast(this.value);
     },
+
     onCancel() {
       Toast('取消');
     },
+
     back() {
       this.$router.back();
     },
@@ -39,4 +41,4 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped></style>

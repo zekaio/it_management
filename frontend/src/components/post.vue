@@ -1,5 +1,6 @@
 <template>
   <div class="post">
+    <!-- 用户信息 -->
     <van-cell :title="post.username" :label="post.created_at">
       <template #right-icon>
         <van-icon
@@ -10,6 +11,8 @@
         />
       </template>
     </van-cell>
+
+    <!-- 帖子内容 -->
     <div
       class="content"
       @click="toDetail"
@@ -28,13 +31,6 @@
       />
     </van-goods-action>
 
-    <!-- // 弹出层
-    <van-popup
-      v-model="popupShow"
-      position="bottom"
-      round
-      :style="{ height: '30%' }"
-    ></van-popup> -->
     <!-- 弹出层 -->
     <van-action-sheet
       v-model="actionSheetShow"
@@ -52,16 +48,19 @@ import { Dialog, Toast } from 'vant';
 import { apis } from '../api/apis';
 export default {
   name: 'Post',
+
   props: {
     post: Object,
     index: Number,
   },
+
   data() {
     return {
       actionSheetShow: false,
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
     };
   },
+
   methods: {
     toDetail() {
       this.$router.push({
@@ -71,8 +70,6 @@ export default {
 
     showActionSheet() {
       this.actionSheetShow = true;
-      console.log('显示');
-      //   this.$router.push({});
     },
 
     onSelect(item) {
@@ -81,29 +78,24 @@ export default {
         this.$router.push({
           path: `/post/${this.post.post_id}/edit`,
         });
-        console.log('编辑');
       } else if (item.name == '删除') {
         Dialog.confirm({
           message: '确认要删除吗？',
-        })
-          .then(() => {
-            apis.deletePost(this.post.post_id).then(() => {
-              Toast.success({ message: '删除成功' });
-              this.$emit('deletePostEvent', this.index);
-            });
-            console.log('删除');
-          })
-          .catch(() => {
-            console.log('取消');
+        }).then(() => {
+          apis.deletePost(this.post.post_id).then(() => {
+            Toast.success({ message: '删除成功' });
+            this.$emit('deletePostEvent', this.index);
           });
+        });
       }
-      console.log(item);
     },
   },
+
   computed: {
     isOwner: function() {
       return localStorage.getItem('uuid') == this.post.uuid;
     },
+
     commentsNum: function() {
       return this.post.comments_num + '';
     },
@@ -113,10 +105,7 @@ export default {
 
 <style scoped>
 .post {
-  /* max-height: 50vh; */
   margin-top: 10px;
   background-color: white;
 }
-/* .icon {
-} */
 </style>

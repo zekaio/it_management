@@ -10,6 +10,3 @@ class PasswordModel(BaseModel):
 
 class UserModel(PasswordModel):
     username = Parameter(str, check_func=check_username)
-
-class UserInfoModel(BaseModel):
-    pass

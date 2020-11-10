@@ -101,7 +101,11 @@ export default {
         console.log(this.posts);
         this.refreshing = false;
         console.log('刷新完成');
-        this.finished = false;
+        if (res.data.data.length == 0) {
+          this.finished = true;
+        } else {
+          this.finished = false;
+        }
         clearTimeout(timeout);
       });
     },
@@ -118,6 +122,9 @@ export default {
         apis.getPosts().then((res) => {
           console.log(res);
           this.posts = res.data.data;
+          if (res.data.data.length == 0) {
+            this.finished = true;
+          }
           console.log(this.posts);
           this.loading = false;
           console.log('刷新完成');

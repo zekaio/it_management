@@ -83,7 +83,7 @@
       <van-nav-bar
         :title="commentMode.edit ? '编辑评论' : '发表评论'"
         left-arrow
-        @click-left="showComment = false"
+        @click-left="hideComment"
         placeholder
         fixed
         z-index="100"
@@ -149,10 +149,11 @@ export default {
 
     refresh() {
       if (this.post !== {}) {
-        this.finished = false;
         apis.getComments(this.post.post_id, 0, 0).then((res) => {
           if (res.data.data.comments.length == 0) {
             this.finished = true;
+          } else {
+            this.finished = false;
           }
           this.comments = res.data.data.comments;
           this.post.comments_num = res.data.data.comments_num;
@@ -207,9 +208,7 @@ export default {
       promise
         .then(() => {
           Toast.success({ message: '发表成功' });
-          this.commentText = '';
-          this.showComment = false;
-          this.commentMode = { edit: false, comment_id: 0 };
+          this.hideComment();
           this.refresh();
         })
         .catch((err) => {
@@ -218,6 +217,12 @@ export default {
               err.response.data.message || `未知错误${err.response.data}`,
           });
         });
+    },
+
+    hideComment() {
+      this.commentText = '';
+      this.showComment = false;
+      this.commentMode = { edit: false, comment_id: 0 };
     },
 
     deleteCommentEventHandler(index) {

@@ -43,13 +43,11 @@ export default {
     },
 
     submit() {
-      let promise;
-      if (this.$route.params.postId) {
-        promise = apis.updatePost(this.$route.params.postId, this.message);
-      } else {
-        promise = apis.savePost(this.message);
-      }
-      promise
+      (() => {
+        return this.$route.params.postId
+          ? apis.updatePost(this.$route.params.postId, this.message)
+          : apis.savePost(this.message);
+      })()
         .then(() => {
           Toast({
             message: `${this.$route.params.postId ? '修改' : '发表'}成功`,

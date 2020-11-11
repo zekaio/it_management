@@ -196,20 +196,16 @@ export default {
     },
 
     submitComment() {
-      let promise;
-      if (this.commentMode.edit == false) {
-        promise = apis.saveComment(this.post.post_id, 0, this.commentText);
-      } else {
-        promise = apis.updateComment(
-          this.commentMode.comment_id,
-          this.commentText,
-        );
-      }
-      promise
-        .then(() => {
+      (() => {
+        return this.commentMode.edit == false
+          ? apis.saveComment(this.post.post_id, 0, this.commentText)
+          : apis.updateComment(this.commentMode.comment_id, this.commentText);
+      })()
+        .then((res) => {
           Toast.success({ message: '发表成功' });
           this.hideComment();
-          this.refresh();
+          this.comments = [res.data.data, ...this.comments];
+          // this.refresh();
         })
         .catch((err) => {
           Toast.fail({
@@ -227,6 +223,7 @@ export default {
 
     deleteCommentEventHandler(index) {
       this.comments.splice(index, 1);
+      this.post.comments_num = this.post.comments_num - 1;
     },
 
     editCommentEventHandler(index) {

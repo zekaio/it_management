@@ -2,6 +2,8 @@ import os
 
 import click
 from flask import Flask, jsonify
+from flask.json import JSONEncoder
+import datetime
 
 from app.config import app_config
 from app.controllers import *
@@ -26,6 +28,7 @@ def create_app(config_name: str = None) -> Flask:
     register_extensions(app)
     register_commands(app)
     register_middleware(app)
+    register_json_encoder(app)
 
     return app
 
@@ -53,6 +56,24 @@ def register_extensions(app: Flask):
 
 def register_middleware(app: Flask):
     app.before_request(before_request)
+
+
+def register_json_encoder(app: Flask):
+    class CustomJSONEncoder(JSONEncoder):
+        def default(self, obj):
+            try:
+                if isinstance(obj, datetime.datetime):
+                    return obj.strftime('%Y-%m-%d %H:%M:%S')
+                elif isinstance(obj, datetime.date):
+                    return obj.strftime('%Y-%m-%d')
+                iterable = iter(obj)
+            except TypeError:
+                pass
+            else:
+                return list(iterable)
+            return JSONEncoder.default(self, obj)
+
+    app.json_encoder = CustomJSONEncoder
 
 
 def register_commands(app: Flask):

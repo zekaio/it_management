@@ -109,13 +109,24 @@ def save_comment():
     """
     comment: CommentModel = CommentModel.get_parameters()
 
+    ret = database.save_comment(
+        content=comment.content,
+        parent_id=comment.parent_id,
+        _type=comment.type,
+        uuid=session.get('uuid')
+    )
+
+    print(ret[3])
+    print(type(ret[3]))
+
     return Result.OK().data({
-        'comment_id': database.save_comment(
-            content=comment.content,
-            parent_id=comment.parent_id,
-            _type=comment.type,
-            uuid=session.get('uuid')
-        )
+        'comment_id': ret[0],
+        'username': ret[1],
+        'uuid': ret[2],
+        'comments': [],
+        'comments_num': 0,
+        'created_at': ret[3],
+        **comment.to_dict()
     }).build()
 
 

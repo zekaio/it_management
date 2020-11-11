@@ -403,7 +403,7 @@ def get_comment(comment_id, last_comment_id: int = 0, limit: int = 5):
     }
 
 
-def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> int:
+def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> (int, str, str):
     """
     发表评论
     :param content: 评论内容
@@ -430,7 +430,7 @@ def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> int:
     db.session.add(comment)
     db.session.commit()
 
-    return comment.comment_id
+    return comment.comment_id, user.username, user.uuid, comment.created_at
 
 
 def update_comment(comment_id: int, content: str, uuid: str) -> int:

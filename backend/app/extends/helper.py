@@ -2,7 +2,8 @@ import typing
 
 
 def check_username(username: str) -> typing.Union[bool, str]:
-    if (username_len := len(username)) < 6 or username_len > 12:
+    username_len = len(username)
+    if username_len < 6 or username_len > 12:
         return '用户名必须是6到12个字符'
     return True
 

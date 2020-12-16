@@ -63,7 +63,6 @@ class BaseModel(object):
             data = request.get_json(force=True)
 
         attributes: typing.List[typing.Tuple[str, Parameter]] = cls._get_attributes()
-        print(attributes)
         for key, parameter in attributes:
             # 获取参数的值
             if parameter.alias is not None:
@@ -81,7 +80,8 @@ class BaseModel(object):
 
             # 判断参数类型是否正确
             type_check = True
-            if (value_type := type(value)) != parameter.type:
+            value_type = type(value)
+            if value_type != parameter.type:
                 # 如果需要的是字符串，传入的是int, float, complex，则可接受
                 if parameter.type == str and not value_type in [int, float, complex]:
                     type_check = False

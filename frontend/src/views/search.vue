@@ -18,6 +18,7 @@
 
 <script>
 import { Toast } from 'vant';
+import { apis } from '../api/apis';
 export default {
   data() {
     return {
@@ -27,7 +28,10 @@ export default {
 
   methods: {
     onSearch() {
-      Toast(this.value);
+      // Toast(this.value);
+      apis.searchPost(this.value).then((res) => {
+        console.log(res);
+      });
     },
 
     onCancel() {

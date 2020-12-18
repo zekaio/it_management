@@ -13,6 +13,7 @@ def get_posts():
     """
     获取多个帖子
     :param: uuid: uuid
+    :param: keyword: 搜索关键字
     :param: last_id: 已获取帖子中最后一个帖子的id，默认为0
     :param: limit: 要获取的数目， 默认为5
     :return: {
@@ -50,7 +51,8 @@ def get_posts():
     """
     return Result.OK().data(
         database.get_posts(
-            uuid=request.args.get('uuid',default=None),
+            uuid=request.args.get('uuid', default=None),
+            keyword=request.args.get('keyword', default=None),
             last_id=request.args.get('last_id', default=0),
             limit=request.args.get('limit', default=5))
     ).build()
@@ -99,6 +101,7 @@ def get_post(post_id: int):
     ).build()
 
 
+@posts_bp.route('', methods=['GET'])
 @posts_bp.route('', methods=['POST'])
 def save_post():
     """

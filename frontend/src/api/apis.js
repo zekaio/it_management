@@ -95,7 +95,7 @@ apis.logout = () => {
  * @param {number} lastId - 已获取帖子中最后一个帖子的id
  * @param {number} limit - 要获取的数目
  */
-apis.getPosts = (lastId = 0, limit = 5) => {
+apis.getPosts = (lastId = 0, limit = 10) => {
   return instance({
     url: `/posts?last_id=${lastId}&limit=${limit}`,
     method: 'get',
@@ -109,9 +109,22 @@ apis.getPosts = (lastId = 0, limit = 5) => {
  * @param {number} lastId - 已获取帖子中最后一个帖子的id
  * @param {number} limit - 要获取的数目
  */
-apis.getUserPosts = (uuid, lastId = 0, limit = 5) => {
+apis.getUserPosts = (uuid, lastId = 0, limit = 10) => {
   return instance({
     url: `/posts?uuid=${uuid}&last_id=${lastId}&limit=${limit}`,
+    method: 'get',
+  });
+};
+
+/**
+ * 通过关键字查找帖子
+ * @param {string} keyword - 搜索关键字
+ * @param {number} lastId - 已获取帖子中最后一个帖子的id
+ * @param {number} limit - 要获取的数目
+ */
+apis.searchPost = (keyword, lastId = 0, limit = 10) => {
+  return instance({
+    url: `/posts?keyword=${keyword}&last_id=${lastId}&limit=${limit}`,
     method: 'get',
   });
 };
@@ -123,7 +136,7 @@ apis.getUserPosts = (uuid, lastId = 0, limit = 5) => {
  * @param {number} lastCommentId - 最后一个评论的id
  * @param {number} limit - 要获取的数目
  */
-apis.getPost = (postId, lastCommentId = 0, limit = 5) => {
+apis.getPost = (postId, lastCommentId = 0, limit = 10) => {
   return instance({
     url: `/posts/${postId}?last_comment_id=${lastCommentId}&limit=${limit}`,
     method: 'get',
@@ -197,7 +210,7 @@ apis.getComments = (parentId, type, lastId = 0, limit = 10) => {
  * @param {number} lastCommentId - 最后一个评论的id
  * @param {number} limit - 要获取的数目
  */
-apis.getComment = (commentId, lastCommentId = 0, limit = 5) => {
+apis.getComment = (commentId, lastCommentId = 0, limit = 10) => {
   return instance({
     url: `/comments/${commentId}?last_comment_id=${lastCommentId}&limit=${limit}`,
     method: 'get',

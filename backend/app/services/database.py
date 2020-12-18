@@ -172,10 +172,11 @@ def get_user_info(uuid: str) -> dict:
     return user.to_dict()
 
 
-def get_posts(uuid: str, last_id: int, limit: int) -> typing.List[dict]:
+def get_posts(uuid: str, keyword: str, last_id: int, limit: int) -> typing.List[dict]:
     """
     获取多个帖子
     :param uuid: uuid
+    :param keyword: 搜索关键词
     :param last_id: 已获取帖子中最后一个帖子的id
     :param limit: 要获取的数目
     :return: [
@@ -206,11 +207,15 @@ def get_posts(uuid: str, last_id: int, limit: int) -> typing.List[dict]:
             .query
             .order_by(Post.post_id.desc())
     )
+
     if uuid:
         user: User = _get_user(uuid=uuid)
         if not user:
             raise HttpError(404, '用户不存在')
         query = query.filter_by(user_id=user.user_id)
+
+    if keyword:
+        query = query.filter(Post.content.like(f'%{keyword}%'))
 
     if int(last_id):
         query = query.filter(Post.post_id < last_id)
@@ -354,7 +359,7 @@ def get_comments(parent_id: int, _type: int, limit: int = 5, last_comment_id: in
             Comment.query.get(parent_id)
         )
     else:
-        obj:Post = (
+        obj: Post = (
             Post.query.get(parent_id)
         )
     return _get_comments(last_comment_id, limit, parent_id=parent_id, type=_type), obj.comments_num

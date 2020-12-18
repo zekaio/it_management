@@ -176,7 +176,7 @@ export default {
               0,
               this.comments.length
                 ? this.comments[this.comments.length - 1].comment_id
-                : 0,
+                : 0
             )
             .then((res) => {
               if (res.data.data.comments.length == 0) {
@@ -243,7 +243,6 @@ export default {
       .then((res) => {
         this.post = res.data.data;
         this.comments = this.post.comments;
-
         if (this.comments.length == 0) {
           this.finished = true;
           this.loading = false;
@@ -253,7 +252,6 @@ export default {
         if (err.response.status === 404) {
           this.showEmpty = true;
         }
-
         Toast.fail({
           message: err.response.data.message || `未知错误${err.response.data}`,
         });

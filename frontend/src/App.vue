@@ -14,11 +14,11 @@ export default {
     apis
       .getUserInfo()
       .then((res) => {
-        if (this.$route.path == '/') {
-          this.$router.push({
-            path: '/index',
-          });
-        }
+        // if (this.$route.path == '/') {
+        //   this.$router.push({
+        //     path: '/index',
+        //   });
+        // }
         localStorage.setItem('username', res.data.data.username);
         localStorage.setItem('uuid', res.data.data.uuid);
         console.log('username: ' + localStorage.getItem('username'));

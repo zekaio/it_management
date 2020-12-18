@@ -54,7 +54,7 @@ export default {
           });
           this.message = '';
           this.$router.push({
-            path: '/index',
+            path: '/',
           });
         })
         .catch((err) => {

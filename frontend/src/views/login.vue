@@ -55,7 +55,7 @@ export default {
         .login(values.username, values.password)
         .then(() => {
           this.$router.push({
-            path: '/index',
+            path: '/',
           });
         })
         .catch((err) => {

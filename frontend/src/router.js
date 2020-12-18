@@ -20,7 +20,7 @@ VueRouter.prototype.push = function push(location) {
 const routes = [
   // 首页
   {
-    path: '/index',
+    path: '/',
     name: 'index',
     component: index,
   },
@@ -56,13 +56,14 @@ const routes = [
   },
   // 用户主页
   {
-    path: '/user',
+    path: '/user/:uuid?',
     name: 'user',
     component: user,
   },
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes,
 });
 

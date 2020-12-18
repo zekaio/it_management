@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import Post from '../components/post';
+import Post from '../components/Post';
 import { apis } from '../api/apis';
 import { Toast } from 'vant';
 export default {
@@ -62,8 +62,6 @@ export default {
       loading: false, // list是否在加载
       finished: false, // list是否完全加载
       refreshing: false, // 上拉刷新
-
-      count: 0, // post数量
 
       posts: [], // 帖子
     };
@@ -118,6 +116,7 @@ export default {
       }
     },
 
+    // 删除帖子
     deletePostEventHandler(index) {
       this.posts.splice(index, 1);
     },
@@ -130,7 +129,6 @@ export default {
   background-color: rgb(230, 230, 230);
   min-height: 100vh;
 }
-
 .van-nav-bar {
   box-shadow: 0 2px 3px -1px rgb(221, 218, 218);
 }

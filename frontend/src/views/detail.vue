@@ -51,6 +51,7 @@
               :finished="finished"
               finished-text="没有更多了"
               @load="getComments"
+              :immediate-check="false"
             >
               <div v-for="(comment, index) in comments" :key="index">
                 <Comment
@@ -116,7 +117,7 @@
 <script>
 import { apis } from '../api/apis';
 import { Toast } from 'vant';
-import Comment from '../components/comment';
+import Comment from '../components/Comment';
 
 export default {
   name: 'detail',

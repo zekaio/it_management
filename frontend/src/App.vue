@@ -14,11 +14,6 @@ export default {
     apis
       .getUserInfo()
       .then((res) => {
-        // if (this.$route.path == '/') {
-        //   this.$router.push({
-        //     path: '/index',
-        //   });
-        // }
         localStorage.setItem('username', res.data.data.username);
         localStorage.setItem('uuid', res.data.data.uuid);
         console.log('username: ' + localStorage.getItem('username'));
@@ -51,5 +46,6 @@ body {
   padding: 0;
   min-height: 100vh;
   min-width: 100vw;
+  background-color: rgb(230, 230, 230);
 }
 </style>

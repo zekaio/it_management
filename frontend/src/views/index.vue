@@ -3,13 +3,13 @@
     <!-- 顶部导航栏 -->
     <van-nav-bar
       title="主页"
-      @click-right="goTo('search')"
+      @click-right="$goTo('search')"
       fixed
       placeholder
       z-index="100"
     >
       <template #right>
-        <van-icon name="search" size="18" />
+        <van-icon name="search" size="18" color="black" />
       </template>
     </van-nav-bar>
 
@@ -43,7 +43,7 @@
       color="red"
       style="position: fixed; bottom: 80px; right: 10px; background-color: white; border-radius: 50%"
       size="50px"
-      @click="goTo('/post/edit')"
+      @click="$goTo('/post/edit')"
     />
   </div>
 </template>
@@ -84,13 +84,6 @@ export default {
           this.finished = false;
         }
         clearTimeout(timeout);
-      });
-    },
-
-    // 跳转页面
-    goTo(path) {
-      this.$router.push({
-        path,
       });
     },
 

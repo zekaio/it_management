@@ -4,12 +4,19 @@
       <!-- 顶部导航栏 -->
       <van-nav-bar
         :title="post.username"
-        left-arrow
-        @click-left="onClickLeft"
         placeholder
         fixed
         z-index="100"
         style="margin-bottom: 10px"
+      >
+        <template #left>
+          <van-icon
+            name="arrow-left"
+            size="18"
+            color="black"
+            @click="$back()"
+            v-if="!isMe"
+          /> </template
       ></van-nav-bar>
 
       <!-- 帖子不存在占位符 -->
@@ -40,7 +47,7 @@
         </van-sticky>
 
         <!-- 评论 -->
-        <div v-show="tabActivate === 0">
+        <div v-show="tabActivate === 0" class="detail_comments">
           <van-pull-refresh
             v-model="refreshing"
             @refresh="refresh"
@@ -144,10 +151,7 @@ export default {
     };
   },
   methods: {
-    onClickLeft() {
-      this.$router.back();
-    },
-
+    // 刷新
     refresh() {
       if (this.post !== {}) {
         apis.getComments(this.post.post_id, 0, 0).then((res) => {
@@ -164,6 +168,7 @@ export default {
       this.refreshing = false;
     },
 
+    // 获取评论
     getComments() {
       if (!this.locked && !this.finished) {
         this.locked = true;
@@ -196,6 +201,7 @@ export default {
       this.loading = false;
     },
 
+    // 提交评论
     submitComment() {
       (() => {
         return this.commentMode.edit == false
@@ -206,7 +212,6 @@ export default {
           Toast.success({ message: '发表成功' });
           this.hideComment();
           this.comments = [res.data.data, ...this.comments];
-          // this.refresh();
         })
         .catch((err) => {
           Toast.fail({
@@ -216,17 +221,20 @@ export default {
         });
     },
 
+    // 退出评论页
     hideComment() {
       this.commentText = '';
       this.showComment = false;
       this.commentMode = { edit: false, comment_id: 0 };
     },
 
+    // 删除评论
     deleteCommentEventHandler(index) {
       this.comments.splice(index, 1);
       this.post.comments_num = this.post.comments_num - 1;
     },
 
+    // 修改评论
     editCommentEventHandler(index) {
       let comment = this.comments[index];
       this.commentText = comment.content;
@@ -234,6 +242,7 @@ export default {
       this.showComment = true;
     },
 
+    // 隐藏输入框
     hideInputEventHandler(hide) {
       this.hideInput = hide;
     },
@@ -262,11 +271,17 @@ export default {
 </script>
 
 <style scoped>
+.detail {
+  min-height: 100vh;
+}
 .detail_content {
-  padding: 5px 40px;
+  padding: 5px 40px 14px;
+  background-color: white;
+  margin-bottom: 12px;
 }
 .detail_placeholder {
   height: 54px;
+  background-color: white;
 }
 .detail_bar {
   position: fixed;
@@ -284,10 +299,7 @@ export default {
   height: 54px;
   width: 100%;
   border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: env(safe-area-inset-bottom);
   background-color: #fff;
-  border-bottom: none !important;
 }
 .detail_input_placeholder {
   height: 54px;
@@ -295,13 +307,16 @@ export default {
   flex: 1;
   height: 36px;
   margin: 0 13px;
-  background-color: #f6f6f6;
+  background-color: rgba(133, 133, 133, 0.25);
 }
 .detail_input_text {
   line-height: 36px;
   margin-left: 10px;
   font-size: 14px;
-  color: #999;
+  color: rgb(120, 120, 120);
   letter-spacing: 0;
+}
+.detail_comments {
+  background-color: white;
 }
 </style>

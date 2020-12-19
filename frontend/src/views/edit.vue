@@ -3,7 +3,7 @@
     <van-nav-bar
       :title="$route.params.postId ? '编辑帖子' : '发表帖子'"
       left-arrow
-      @click-left="onClickLeft"
+      @click-left="$back()"
       placeholder
       fixed
       z-index="100"
@@ -38,10 +38,6 @@ export default {
     };
   },
   methods: {
-    onClickLeft() {
-      this.$router.back();
-    },
-
     submit() {
       (() => {
         return this.$route.params.postId

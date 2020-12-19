@@ -122,9 +122,23 @@ apis.getUserPosts = (uuid, lastId = 0, limit = 10) => {
  * @param {number} lastId - 已获取帖子中最后一个帖子的id
  * @param {number} limit - 要获取的数目
  */
-apis.searchPost = (keyword, lastId = 0, limit = 10) => {
+apis.searchPosts = (keyword, lastId = 0, limit = 10) => {
   return instance({
     url: `/posts?keyword=${keyword}&last_id=${lastId}&limit=${limit}`,
+    method: 'get',
+  });
+};
+
+/**
+ * 通过关键字查找指定用户的帖子
+ * @param {string} uuid - uuid
+ * @param {string} keyword - 搜索关键字
+ * @param {number} lastId - 已获取帖子中最后一个帖子的id
+ * @param {number} limit - 要获取的数目
+ */
+apis.searchUserPosts = (uuid, keyword, lastId = 0, limit = 10) => {
+  return instance({
+    url: `/posts?uuid=${uuid}&keyword=${keyword}&last_id=${lastId}&limit=${limit}`,
     method: 'get',
   });
 };

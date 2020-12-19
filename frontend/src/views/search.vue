@@ -4,12 +4,12 @@
     <form action="/">
       <van-search
         v-model="keyword"
-        placeholder="请输入搜索关键词"
+        :placeholder="placeholderText"
         show-action
         @search="getPosts"
       >
         <template #left>
-          <van-icon name="arrow-left" @click="back" />
+          <van-icon name="arrow-left" @click="$back()" />
         </template>
         <template #action>
           <div @click="getPosts">搜索</div>
@@ -53,17 +53,26 @@ export default {
     };
   },
   components: { Post },
-
   methods: {
     // 刷新
     refresh() {
+      if (this.keyword === '') {
+        Toast.fail({ message: '关键词不能为空' });
+        return;
+      }
       let timeout = setTimeout(() => {
         Toast.fail({
           message: '请求超时，请重试',
         });
         return;
       }, 10000);
-      apis.searchPost(this.keyword).then((res) => {
+      let req;
+      if (this.$route.query.uuid === undefined) {
+        req = apis.searchPosts(this.keyword);
+      } else {
+        req = apis.searchUserPosts(this.$route.query.uuid, this.keyword);
+      }
+      req.then((res) => {
         this.posts = res.data.data;
         this.refreshing = false;
         if (res.data.data.length == 0) {
@@ -75,13 +84,21 @@ export default {
       });
     },
 
+    // 加载帖子
     getPosts() {
       if (this.keyword === '') {
         Toast.fail({ message: '关键词不能为空' });
         return;
       }
+      let req;
+
       if (this.posts.length == 0) {
-        apis.searchPost(this.keyword).then((res) => {
+        if (this.$route.query.uuid === undefined) {
+          req = apis.searchPosts(this.keyword);
+        } else {
+          req = apis.searchUserPosts(this.$route.query.uuid, this.keyword);
+        }
+        req.then((res) => {
           this.posts = res.data.data;
           if (res.data.data.length == 0) {
             this.finished = true;
@@ -89,16 +106,26 @@ export default {
           this.loading = false;
         });
       } else {
-        apis
-          .searchPost(this.keyword, this.posts[this.posts.length - 1].post_id)
-          .then((res) => {
-            if (res.data.data.length == 0) {
-              this.finished = true;
-            } else {
-              this.posts = [...this.posts, ...res.data.data];
-            }
-            this.loading = false;
-          });
+        if (this.$route.query.uuid === undefined) {
+          req = apis.searchPosts(
+            this.keyword,
+            this.posts[this.posts.length - 1].post_id
+          );
+        } else {
+          req = apis.searchUserPosts(
+            this.$route.query.uuid,
+            this.keyword,
+            this.posts[this.posts.length - 1].post_id
+          );
+        }
+        req.then((res) => {
+          if (res.data.data.length == 0) {
+            this.finished = true;
+          } else {
+            this.posts = [...this.posts, ...res.data.data];
+          }
+          this.loading = false;
+        });
       }
     },
 
@@ -106,12 +133,14 @@ export default {
     deletePostEventHandler(index) {
       this.posts.splice(index, 1);
     },
+  },
 
-    back() {
-      this.$router.back();
+  computed: {
+    placeholderText: function() {
+      return this.$route.query.uuid === undefined
+        ? '请输入搜索关键词'
+        : '搜索Ta的帖子';
     },
   },
 };
 </script>
-
-<style scoped></style>

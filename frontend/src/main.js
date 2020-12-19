@@ -31,6 +31,7 @@ import {
   Tab,
   Tabs,
   Sticky,
+  Uploader,
 } from 'vant';
 
 Vue.config.productionTip = false;
@@ -63,7 +64,18 @@ Vue.use(Form)
   .use(IndexAnchor)
   .use(Tab)
   .use(Tabs)
-  .use(Sticky);
+  .use(Sticky)
+  .use(Uploader);
+
+Vue.prototype.$goTo = function(path) {
+  this.$router.push({
+    path,
+  });
+};
+
+Vue.prototype.$back = function() {
+  this.$router.back();
+};
 
 new Vue({
   router,

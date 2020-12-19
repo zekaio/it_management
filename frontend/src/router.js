@@ -8,6 +8,7 @@ import detail from './views/detail.vue';
 import edit from './views/edit.vue';
 import search from './views/search.vue';
 import user from './views/user.vue';
+import userInfo from './views/userInfo.vue';
 
 Vue.use(VueRouter);
 
@@ -56,9 +57,15 @@ const routes = [
   },
   // 用户主页
   {
-    path: '/user/:uuid?',
+    path: '/user',
     name: 'user',
     component: user,
+  },
+  // 用户信息
+  {
+    path: '/user/info',
+    name: 'userInfo',
+    component: userInfo,
   },
 ];
 

@@ -9,7 +9,12 @@
         @search="getPosts"
       >
         <template #left>
-          <van-icon name="arrow-left" @click="$back()" />
+          <van-icon
+            name="arrow-left"
+            size="18"
+            @click="$back()"
+            color="black"
+          />
         </template>
         <template #action>
           <div @click="getPosts">搜索</div>

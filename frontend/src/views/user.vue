@@ -6,10 +6,10 @@
       <template #left>
         <van-icon
           name="arrow-left"
-          size="1.5rem"
+          size="18"
           color="black"
           @click="$back()"
-          v-if="!isMe"
+          v-if="$route.query.username !== undefined"
         />
       </template>
       <template #right>
@@ -20,6 +20,7 @@
           color="black"
           @click="$goTo(`/search?uuid=${info.uuid}`)"
         />
+
         <!-- 发帖 -->
         <svg
           t="1608349113391"
@@ -97,6 +98,7 @@
             ></path>
           </svg>
         </div>
+
         <!-- 他人 -->
         <div class="user_info_other" v-if="!isMe">
           <div class="user_info_other_like">已关注</div>
@@ -209,37 +211,27 @@ export default {
     modifyUserInfo() {},
   },
   async mounted() {
-    if (this.$route.query.username === undefined) {
+    if (this.isMe) {
       // 获取个人信息
     } else {
       // 获取username对应用户信息
     }
   },
   computed: {
+    username: function() {
+      return this.$route.query.username;
+    },
     isMe: function() {
-      return this.$route.query.username === undefined;
+      return (
+        this.username === undefined ||
+        this.username === localStorage.getItem('username')
+      );
     },
   },
 };
 </script>
 
 <style scoped>
-/* 顶部导航栏 */
-/* .user_nav_bar {
-  background-color: transparent;
-  position: fixed;
-  z-index: 100;
-  top: 0;
-}
-.user_nav_bar_content {
-  position: relative;
-  width: 100vw;
-}
-.user_nav_bar_right_icon {
-  position: absolute;
-  margin-top: 3vw;
-  right: 3vw;
-} */
 .user_info {
   width: 100vw;
   min-height: 30vh;
@@ -285,4 +277,20 @@ export default {
   font-size: 0.7rem;
   padding: 0.5rem;
 }
+/* 顶部导航栏 */
+/* .user_nav_bar {
+  background-color: transparent;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+}
+.user_nav_bar_content {
+  position: relative;
+  width: 100vw;
+}
+.user_nav_bar_right_icon {
+  position: absolute;
+  margin-top: 3vw;
+  right: 3vw;
+} */
 </style>

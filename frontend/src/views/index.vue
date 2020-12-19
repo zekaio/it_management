@@ -38,13 +38,24 @@
     </van-tabbar>
 
     <!-- 发表帖子 -->
-    <van-icon
-      name="add"
-      color="red"
-      style="position: fixed; bottom: 80px; right: 10px; background-color: white; border-radius: 50%"
-      size="50px"
-      @click="$goTo('/post/edit')"
-    />
+    <div class="submitIcon" @click="$goTo('/post/edit')">
+      <svg
+        t="1608362557923"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="29103"
+        width="16"
+        height="16"
+      >
+        <path
+          d="M902.947 571.027h-332.293v332.346c0 32.387-26.267 58.628-58.655 58.628-32.387 0-58.654-26.241-58.654-58.628v-332.346h-332.295c-32.414 0-58.654-26.241-58.654-58.628 0-32.375 26.243-58.628 58.654-58.628h332.293v-332.346c0-32.375 26.267-58.628 58.654-58.628 32.388 0 58.655 26.254 58.655 58.628v332.347h332.293c32.414 0 58.655 26.252 58.655 58.626-0.001 32.387-26.241 58.626-58.655 58.626z"
+          p-id="29104"
+          fill="#ffffff"
+        ></path>
+      </svg>
+    </div>
   </div>
 </template>
 
@@ -124,5 +135,13 @@ export default {
 }
 .van-nav-bar {
   box-shadow: 0 2px 3px -1px rgb(221, 218, 218);
+}
+.submitIcon {
+  position: fixed;
+  bottom: 70px;
+  right: 14px;
+  background-color: red;
+  padding: 12px 14px;
+  border-radius: 50%;
 }
 </style>

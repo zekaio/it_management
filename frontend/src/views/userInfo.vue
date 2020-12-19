@@ -9,7 +9,7 @@
       style="margin-bottom: 10px"
     >
       <template #left>
-        <van-icon name="arrow-left" color="black" @click="$back()" />
+        <van-icon name="arrow-left" size="18" color="black" @click="$back()" />
       </template>
     </van-nav-bar>
 

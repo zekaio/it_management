@@ -4,12 +4,24 @@
     style="margin:2px 16px; max-height=40vh; padding-bottom: 8px"
   >
     <!-- 用户信息 -->
-    <van-cell
-      :title="comment.username"
-      :label="comment.created_at"
-      size="small"
-      :border="false"
-    >
+    <van-cell size="small" :border="false">
+      <template #title>
+        <van-image
+          round
+          width="2.5rem"
+          height="2.5rem"
+          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          class="comment_cell_title_image"
+          @click="$goTo(`/user?username=${comment.username}`)"
+        />
+        <span class="comment_cell_title_text">
+          {{ comment.username }}
+          <br />
+          <span style="color: #708090;">
+            {{ comment.created_at }}
+          </span>
+        </span>
+      </template>
       <template #right-icon>
         <van-icon
           name="arrow-down"
@@ -95,5 +107,13 @@ export default {
 <style scoped>
 .comment_content {
   margin: 0 16px;
+}
+.comment_cell_title_image {
+  vertical-align: middle;
+}
+.comment_cell_title_text {
+  margin-left: 2vw;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

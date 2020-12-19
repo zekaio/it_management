@@ -1,7 +1,24 @@
 <template>
   <div class="post">
     <!-- 用户信息 -->
-    <van-cell :title="post.username" :label="post.created_at">
+    <van-cell center>
+      <template #title>
+        <van-image
+          round
+          width="2.5rem"
+          height="2.5rem"
+          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          class="post_cell_title_image"
+          @click="$goTo(`/user?username=${post.username}`)"
+        />
+        <span class="post_cell_title_text">
+          {{ post.username }}
+          <br />
+          <span style="color: #708090;">
+            {{ post.created_at }}
+          </span>
+        </span>
+      </template>
       <template #right-icon>
         <van-icon
           name="arrow-down"
@@ -107,5 +124,14 @@ export default {
 .post {
   margin-top: 10px;
   background-color: white;
+}
+
+.post_cell_title_image {
+  vertical-align: middle;
+}
+.post_cell_title_text {
+  margin-left: 2vw;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

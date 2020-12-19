@@ -1,5 +1,5 @@
 class BaseConfig:
-    pass
+    upload_dir = './avatars/'
 
 
 DatabaseConfig = dict(
@@ -17,7 +17,8 @@ dbname = {
 
 
 def get_database_url(env: str) -> str:
-    return 'mysql+mysqlconnector://{username}:{password}@{host}:{port}/{database}?charset=utf8mb4&collation=utf8mb4_general_ci'.format(**DatabaseConfig, database=dbname[env])
+    return 'mysql+mysqlconnector://{username}:{password}@{host}:{port}/{database}?charset=utf8mb4&collation=utf8mb4_general_ci'.format(
+        **DatabaseConfig, database=dbname[env])
 
 
 class AppConfig:

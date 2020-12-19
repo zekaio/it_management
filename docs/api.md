@@ -27,7 +27,7 @@
 ### U1.注册
 
 ```http
-POST /user
+POST /users
 ```
 
 #### Request Body
@@ -61,7 +61,7 @@ POST /user
 ### U2.修改密码
 
 ```http
-PUT /user/password
+PUT /users/me/password
 ```
 
 #### Request Body
@@ -95,30 +95,46 @@ PUT /user/password
 ### U3.修改用户信息
 
 ```http
-PUT /user/info
+PUT /users/me/info
 ```
 
 #### Request Body
 
 ```json
-
+{
+    "username": "用户名",
+    "sex": "性别 男、女、不明",
+    "grade": "年级 数字",
+    "major": "专业",
+    "description": "个人介绍"
+}
 ```
 
 #### Response Body
 
 ```json
-
+{
+    "data": null,
+    "msg": "OK",
+    "status": 200
+}
 ```
 
 #### 错误
+
+`400`：性别、年龄、个人介绍不符合要求
+
+`409`：用户名已存在
 
 
 
 ### U4.获取用户信息
 
 ```http
-GET /user
+GET /users?uuid={uuid}&username={username}
 ```
+
+不传uuid和username则是获取自己的
 
 #### Response Body
 
@@ -126,7 +142,13 @@ GET /user
 {
     "data": {
         "username": "用户名",
-        "uuid": "uuid"
+        "uuid": "uuid",
+        "sex": "性别 男、女、不明",
+    	"grade": "年级 数字",
+    	"major": "专业",
+    	"description": "个人介绍",
+        "posts_num": "帖子数量",
+        "avatar": "头像文件名"
     },
     "msg": "OK",
     "status": 200
@@ -136,6 +158,72 @@ GET /user
 #### 错误
 
 `404`：用户不存在
+
+
+
+### U5.查找用户
+
+```http
+GET /users/search?query={query}&last_user_uuid={last_user_uuid}&limit={limit}
+```
+
+#### Response Body
+
+```json
+{
+	"data": [
+	    {
+	        "username": "用户名",
+	        "uuid": "uuid",
+	        "sex": "性别 男、女、不明",
+	        "grade": "年级 数字",
+	        "major": "专业",
+	        "description": "个人介绍",
+	        "posts_num": "帖子数量",
+	        "avatar": "头像文件名"
+	    },
+	    ...
+	],
+	"msg": "OK",
+	"status": 200
+}
+```
+
+
+
+### U6.上传头像
+
+```http
+PUT /users/me/avatar
+```
+
+#### Request Body
+
+图片文件
+
+#### Response Body
+
+```json
+{
+    "data": "头像地址",
+    "msg": "OK",
+    "status": 200
+}
+```
+
+#### 错误
+
+`400`：上传失败/不支持的文件类型
+
+
+
+### U7.修改背景图
+
+#### Request Body
+
+#### Response Body
+
+#### 错误
 
 
 
@@ -198,23 +286,24 @@ DELETE /session
 ### P1.获取多个帖子
 
 ```http
-GET /posts?uuid={uuid}&last_id={last_id}&limit={limit}
+GET /posts?uuid={uuid}&username={username}&query={query}&last_id={last_id}&limit={limit}
 ```
 
 #### 请求参数
 
-| 参数名  | 说明                         | 默认值 |
-| ------- | ---------------------------- | ------ |
-| user_id | uuid                         | 可选   |
-| last_id | 已获取帖子中最后一个帖子的id | 0      |
-| limit   | 要获取的数目                 | 5      |
+| 参数名   | 说明                         | 默认值 |
+| -------- | ---------------------------- | ------ |
+| user_id  | uuid                         | 可选   |
+| username | 用户名                       | 可选   |
+| query    | 搜索关键词                   | 可选   |
+| last_id  | 已获取帖子中最后一个帖子的id | 0      |
+| limit    | 要获取的数目                 | 5      |
 
 #### Response Body
 
 ```json
 {
-	"data": {
-	    "posts": [
+	"data":[
 	        {
 	            "post_id": "帖子id",
 	            "username": "发帖人用户名",
@@ -234,7 +323,7 @@ GET /posts?uuid={uuid}&last_id={last_id}&limit={limit}
 	            ]
 	        },
 	    ]
-	},
+	,
 	"msg": "OK",
 	"status": 200
 }

@@ -3,6 +3,7 @@ import typing
 from app.extends.error import HttpError
 from app.extensions import db
 from app.models.database import *
+from app.config import BaseConfig
 
 
 def _get_user(**kwargs) -> User:
@@ -125,13 +126,31 @@ def create_user(username: str, password: str) -> tuple:
     return user.uuid, user.username
 
 
+def update_user_detail(uuid: str, user_detail: dict):
+    """
+    修改用户信息
+    :param uuid: uuid
+    :param user_detail: 用户信息
+    """
+    user: User = _get_user(uuid=uuid)
+
+    if user is None:
+        raise HttpError(404, '用户不存在')
+
+    if user.username != user_detail.get('username'):
+        new_user: User = _get_user(username=user_detail.get('username'))
+        if new_user:
+            raise HttpError(409, '用户名已存在')
+    user.update(**user_detail)
+    db.session.commit()
+
+
 def update_user_password(uuid: str, password: str, old_pwd: str):
     """
     修改密码
     :param uuid: uuid
     :param old_pwd: 旧密码
     :param password: 新密码
-
     """
     user: User = _get_user(uuid=uuid)
     if user is None:
@@ -156,26 +175,32 @@ def user_login(username: str, password: str) -> tuple:
     return user.uuid, user.username
 
 
-def get_user_info(uuid: str) -> dict:
+def get_user_info(uuid: str, username: str) -> dict:
     """
     获取用户信息
     :param uuid: uuid
+    :param username 用户名
     :return: {
         "username": "用户名",
         "uuid": "uuid"
     }
     """
-    user: User = _get_user(uuid=uuid)
+    if uuid:
+        user: User = _get_user(uuid=uuid)
+    else:
+        user: User = _get_user(username=username)
+
     if user is None:
         raise HttpError(404, '用户不存在')
 
     return user.to_dict()
 
 
-def get_posts(uuid: str, keyword: str, last_id: int, limit: int) -> typing.List[dict]:
+def get_posts(uuid: str, username: str, keyword: str, last_id: int, limit: int) -> typing.List[dict]:
     """
     获取多个帖子
     :param uuid: uuid
+    :param username: 用户名
     :param keyword: 搜索关键词
     :param last_id: 已获取帖子中最后一个帖子的id
     :param limit: 要获取的数目
@@ -210,6 +235,12 @@ def get_posts(uuid: str, keyword: str, last_id: int, limit: int) -> typing.List[
 
     if uuid:
         user: User = _get_user(uuid=uuid)
+        if not user:
+            raise HttpError(404, '用户不存在')
+        query = query.filter_by(user_id=user.user_id)
+
+    if username:
+        user: User = _get_user(username=username)
         if not user:
             raise HttpError(404, '用户不存在')
         query = query.filter_by(user_id=user.user_id)
@@ -289,6 +320,7 @@ def save_post(content: str, uuid: str) -> int:
 
     post = Post(content=content, user_id=user.user_id)
     db.session.add(post)
+    user.posts_num = user.posts_num + 1
     db.session.commit()
 
     return post.post_id
@@ -329,8 +361,13 @@ def delete_post(post_id: int, uuid: str):
     post_info = _get_post_or_comment_info(post)
     if not uuid == post_info.get('uuid'):
         raise HttpError(403, '没有权限删除该帖子')
-
     db.session.delete(post)
+
+    user: User = _get_user(uuid=uuid)
+    if user is None:
+        raise HttpError(404, '用户不存在')
+    user.posts_num = user.posts_num - 1
+
     db.session.commit()
 
 
@@ -482,4 +519,34 @@ def delete_comment(comment_id: int, uuid: str):
         parent_post.comments_num = parent_post.comments_num - 1
 
     db.session.delete(comment)
+    db.session.commit()
+
+
+def search_users(keyword: str, last_user_uuid: str, limit: int = 10):
+    """
+    查找用户
+    :param keyword: 查询关键字
+    :param last_user_uuid: 最后一个用户的uuid
+    :param limit: 查询数量
+    """
+    query = (
+        User.query.order_by(User.user_id.desc()).filter(User.username.like(f'%{keyword}%'))
+    )
+    if last_user_uuid:
+        last_user: User = _get_user(uuid=last_user_uuid)
+        if last_user is not None:
+            query = query.filter(User.user_id < last_user.user_id)
+
+    users: typing.List[User] = (
+        query.limit(limit).all()
+    )
+
+    return [user.to_dict() for user in users]
+
+
+def update_avatar(uuid, filename):
+    user: User = _get_user(uuid=uuid)
+    if user is None:
+        raise HttpError(404, '用户不存在')
+    user.avatar = filename
     db.session.commit()

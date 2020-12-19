@@ -11,6 +11,12 @@ class User(Model):
     uuid = db.Column(db.String(36), default=lambda: str(uuid.uuid4()), unique=True, nullable=False, comment='uuid')
     username = db.Column(db.String(255), unique=True, nullable=False, comment='用户名')
     password = db.Column(db.String(255), nullable=False, comment='密码')
+    posts_num = db.Column(db.Integer, nullable=False, default=0, comment='帖子总数')
+    sex = db.Column(db.String(10), nullable=False, default='不明', comment='性别')
+    grade = db.Column(db.Integer, nullable=True, default=None, comment='年级')
+    major = db.Column(db.String(50), nullable=False, default='', comment='专业')
+    description = db.Column(db.String(255), nullable=False, default='', comment='个人介绍')
+    avatar = db.Column(db.String(255), nullable=False, default='default.jpg', comment='头像')
 
     def __init__(self, username: str, password: str):
         self.username = username
@@ -25,5 +31,14 @@ class User(Model):
     def to_dict(self) -> dict:
         return {
             'username': self.username,
-            'uuid': self.uuid
+            'uuid': self.uuid,
+            'posts_num': self.posts_num,
+            'sex': self.sex,
+            'grade': self.grade,
+            'major': self.major,
+            'description': self.description,
+            'avatar': self.avatar
         }
+
+    def update(self, **kwargs):
+        self._update(_except=['user_id', 'uuid', 'password', 'posts_num'], **kwargs)

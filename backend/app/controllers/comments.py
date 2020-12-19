@@ -116,9 +116,6 @@ def save_comment():
         uuid=session.get('uuid')
     )
 
-    print(ret[3])
-    print(type(ret[3]))
-
     return Result.OK().data({
         'comment_id': ret[0],
         'username': ret[1],

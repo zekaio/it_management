@@ -7,3 +7,4 @@ env/
 app/config/config.py
 *.log
 migrations/
+avatars/

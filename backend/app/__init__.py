@@ -42,7 +42,7 @@ def register_errorhandler(app: Flask):
 
 
 def register_blueprints(app: Flask):
-    app.register_blueprint(user_bp)
+    app.register_blueprint(users_bp)
     app.register_blueprint(session_bp)
     app.register_blueprint(posts_bp)
     app.register_blueprint(comments_bp)

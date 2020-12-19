@@ -21,3 +21,14 @@ def check_post_or_comment_content(content: str) -> typing.Union[bool, str]:
     elif content_len > 120:
         return '帖子或评论长度不能超过120字'
     return True
+
+
+def check_sex(sex: str) -> typing.Union[bool, str]:
+    if sex not in ['男', '女', '不明']:
+        return '性别错误'
+    return True
+
+def check_description(description) -> typing.Union[bool, str]:
+    if len(description) > 50:
+        return '自我介绍不能超过50字'
+    return True

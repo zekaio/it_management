@@ -10,7 +10,7 @@
           round
           width="2.5rem"
           height="2.5rem"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="avatarDir + comment.avatar"
           class="comment_cell_title_image"
           @click="$goTo(`/user?username=${comment.username}`)"
         />
@@ -54,6 +54,7 @@
 <script>
 import { Dialog, Toast } from 'vant';
 import { apis } from '../api/apis';
+import { avatarDir } from '../config';
 export default {
   name: 'Comment',
 
@@ -65,12 +66,14 @@ export default {
   data() {
     return {
       actionSheetShow: false,
+      avatarDir,
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
     };
   },
 
   methods: {
     showActionSheet() {
+      console.log(this.comment.avatar);
       this.actionSheetShow = true;
       this.$emit('hideInputEvent', true);
     },
@@ -83,10 +86,13 @@ export default {
         Dialog.confirm({
           message: '确认要删除吗？',
         }).then(() => {
-          apis.deleteComment(this.comment.comment_id).then(() => {
-            Toast.success({ message: '删除成功' });
-            this.$emit('deleteCommentEvent', this.index);
-          });
+          apis
+            .deleteComment(this.comment.comment_id)
+            .then(() => {
+              Toast.success({ message: '删除成功' });
+              this.$emit('deleteCommentEvent', this.index);
+            })
+            .catch((err) => this.$error(err));
         });
       }
     },
@@ -98,7 +104,7 @@ export default {
 
   computed: {
     isOwner: function() {
-      return localStorage.getItem('uuid') == this.comment.uuid;
+      return localStorage.getItem('uuid') === this.comment.uuid;
     },
   },
 };

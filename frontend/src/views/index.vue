@@ -86,37 +86,48 @@ export default {
         });
         return;
       }, 10000);
-      apis.getPosts().then((res) => {
-        this.posts = res.data.data;
-        this.refreshing = false;
-        if (res.data.data.length == 0) {
-          this.finished = true;
-        } else {
-          this.finished = false;
-        }
-        clearTimeout(timeout);
-      });
+      apis
+        .getPosts()
+        .then((res) => {
+          this.posts = res.data.data;
+          this.refreshing = false;
+          if (res.data.data.length == 0) {
+            this.finished = true;
+          } else {
+            this.finished = false;
+          }
+        })
+        .catch((err) => this.$error(err))
+        .finally(() => {
+          clearTimeout(timeout);
+        });
     },
 
     // 获取更多帖子
     getPosts() {
       if (this.posts.length == 0) {
-        apis.getPosts().then((res) => {
-          this.posts = res.data.data;
-          if (res.data.data.length == 0) {
-            this.finished = true;
-          }
-          this.loading = false;
-        });
+        apis
+          .getPosts()
+          .then((res) => {
+            this.posts = res.data.data;
+            if (res.data.data.length == 0) {
+              this.finished = true;
+            }
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
       } else {
-        apis.getPosts(this.posts[this.posts.length - 1].post_id).then((res) => {
-          if (res.data.data.length == 0) {
-            this.finished = true;
-          } else {
-            this.posts = [...this.posts, ...res.data.data];
-          }
-          this.loading = false;
-        });
+        apis
+          .getPosts({}, this.posts[this.posts.length - 1].post_id)
+          .then((res) => {
+            if (res.data.data.length == 0) {
+              this.finished = true;
+            } else {
+              this.posts = [...this.posts, ...res.data.data];
+            }
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
       }
     },
 

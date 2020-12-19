@@ -15,9 +15,9 @@
             size="18"
             color="black"
             @click="$back()"
-            v-if="!isMe"
-          /> </template
-      ></van-nav-bar>
+          />
+        </template>
+      </van-nav-bar>
 
       <!-- 帖子不存在占位符 -->
       <van-empty description="帖子不存在" v-if="showEmpty"></van-empty>
@@ -31,7 +31,7 @@
               round
               width="2.5rem"
               height="2.5rem"
-              src="https://img.yzcdn.cn/vant/cat.jpeg"
+              :src="avatarDir + post.avatar"
               class="detail_post_cell_title_image"
               @click="$goTo(`/user?username=${post.username}`)"
             />
@@ -154,6 +154,7 @@
 import { apis } from '../api/apis';
 import { Toast } from 'vant';
 import Comment from '../components/Comment';
+import { avatarDir } from '../config';
 
 export default {
   name: 'detail',
@@ -177,22 +178,28 @@ export default {
       locked: false,
 
       hideInput: false,
+
+      lock: false,
+      avatarDir,
     };
   },
   methods: {
     // 刷新
     refresh() {
       if (this.post !== {}) {
-        apis.getComments(this.post.post_id, 0, 0).then((res) => {
-          if (res.data.data.comments.length == 0) {
-            this.finished = true;
-          } else {
-            this.finished = false;
-          }
-          this.comments = res.data.data.comments;
-          this.post.comments_num = res.data.data.comments_num;
-          this.loading = false;
-        });
+        apis
+          .getComments(this.post.post_id, 0, 0)
+          .then((res) => {
+            if (res.data.data.comments.length == 0) {
+              this.finished = true;
+            } else {
+              this.finished = false;
+            }
+            this.comments = res.data.data.comments;
+            this.post.comments_num = res.data.data.comments_num;
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
       }
       this.refreshing = false;
     },
@@ -220,7 +227,8 @@ export default {
               }
 
               this.comments = [...this.comments, ...res.data.data.comments];
-            });
+            })
+            .catch((err) => this.$error(err));
         }
       } else if (!this.finished) {
         setTimeout(() => {
@@ -232,22 +240,23 @@ export default {
 
     // 提交评论
     submitComment() {
-      (() => {
-        return this.commentMode.edit == false
-          ? apis.saveComment(this.post.post_id, 0, this.commentText)
-          : apis.updateComment(this.commentMode.comment_id, this.commentText);
-      })()
-        .then((res) => {
-          Toast.success({ message: '发表成功' });
-          this.hideComment();
-          this.comments = [res.data.data, ...this.comments];
-        })
-        .catch((err) => {
-          Toast.fail({
-            message:
-              err.response.data.message || `未知错误${err.response.data}`,
+      if (!this.lock) {
+        this.lock = true;
+        (() => {
+          return this.commentMode.edit == false
+            ? apis.saveComment(this.post.post_id, 0, this.commentText)
+            : apis.updateComment(this.commentMode.comment_id, this.commentText);
+        })()
+          .then((res) => {
+            Toast.success({ message: '发表成功' });
+            this.hideComment();
+            this.comments = [res.data.data, ...this.comments];
+          })
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.lock = false;
           });
-        });
+      }
     },
 
     // 退出评论页
@@ -287,14 +296,14 @@ export default {
           this.loading = false;
         }
       })
-      .catch((err) => {
-        if (err.response.status === 404) {
-          this.showEmpty = true;
-        }
-        Toast.fail({
-          message: err.response.data.message || `未知错误${err.response.data}`,
-        });
-      });
+      .catch((err) =>
+        this.$error(err, (err) => {
+          if (err.response.status === 404) {
+            this.showEmpty = true;
+            return true;
+          }
+        })
+      );
   },
 };
 </script>
@@ -318,7 +327,6 @@ export default {
 }
 .detail_placeholder {
   height: 54px;
-  background-color: white;
 }
 .detail_bar {
   position: fixed;

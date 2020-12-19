@@ -48,38 +48,43 @@ export default {
   data() {
     return {
       message: '',
+      lock: false,
     };
   },
   methods: {
     submit() {
-      (() => {
-        return this.$route.params.postId
-          ? apis.updatePost(this.$route.params.postId, this.message)
-          : apis.savePost(this.message);
-      })()
-        .then(() => {
-          Toast({
-            message: `${this.$route.params.postId ? '修改' : '发表'}成功`,
+      if (!this.lock) {
+        this.lock = true;
+        (() => {
+          return this.$route.params.postId
+            ? apis.updatePost(this.$route.params.postId, this.message)
+            : apis.savePost(this.message);
+        })()
+          .then(() => {
+            Toast({
+              message: `${this.$route.params.postId ? '修改' : '发表'}成功`,
+            });
+            this.message = '';
+            this.$router.push({
+              path: '/',
+            });
+          })
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.lock = false;
           });
-          this.message = '';
-          this.$router.push({
-            path: '/',
-          });
-        })
-        .catch((err) => {
-          Toast.fail({
-            message:
-              err.response.data.message || `未知错误${err.response.data}`,
-          });
-        });
+      }
     },
   },
 
   async mounted() {
     if (this.$route.params.postId) {
-      apis.getPost(this.$route.params.postId).then((res) => {
-        this.message = res.data.data.content;
-      });
+      apis
+        .getPost(this.$route.params.postId)
+        .then((res) => {
+          this.message = res.data.data.content;
+        })
+        .catch((err) => this.$error(err));
     }
   },
 };

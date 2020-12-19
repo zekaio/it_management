@@ -50,7 +50,6 @@
 </template>
 
 <script>
-import { Toast } from 'vant';
 import { apis } from '../api/apis';
 export default {
   data() {
@@ -68,12 +67,7 @@ export default {
             path: '/',
           });
         })
-        .catch((err) => {
-          Toast.fail({
-            message:
-              err.response.data.message || `未知错误${err.response.data}`,
-          });
-        });
+        .catch((err) => this.$error(err));
     },
   },
 };

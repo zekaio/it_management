@@ -7,7 +7,7 @@
           round
           width="2.5rem"
           height="2.5rem"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="avatarDir + post.avatar"
           class="post_cell_title_image"
           @click="$goTo(`/user?username=${post.username}`)"
         />
@@ -63,6 +63,7 @@
 <script>
 import { Dialog, Toast } from 'vant';
 import { apis } from '../api/apis';
+import { avatarDir } from '../config';
 export default {
   name: 'Post',
 
@@ -75,6 +76,7 @@ export default {
     return {
       actionSheetShow: false,
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
+      avatarDir,
     };
   },
 
@@ -99,10 +101,13 @@ export default {
         Dialog.confirm({
           message: '确认要删除吗？',
         }).then(() => {
-          apis.deletePost(this.post.post_id).then(() => {
-            Toast.success({ message: '删除成功' });
-            this.$emit('deletePostEvent', this.index);
-          });
+          apis
+            .deletePost(this.post.post_id)
+            .then(() => {
+              Toast.success({ message: '删除成功' });
+              this.$emit('deletePostEvent', this.index);
+            })
+            .catch((err) => this.$error(err));
         });
       }
     },
@@ -110,7 +115,7 @@ export default {
 
   computed: {
     isOwner: function() {
-      return localStorage.getItem('uuid') == this.post.uuid;
+      return localStorage.getItem('uuid') === this.post.uuid;
     },
 
     commentsNum: function() {

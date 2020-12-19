@@ -18,7 +18,7 @@
           name="search"
           size="1.5rem"
           color="black"
-          @click="$goTo(`/search?uuid=${info.uuid}`)"
+          @click="$goTo(`/search?username=${info.username}`)"
         />
 
         <!-- 发帖 -->
@@ -113,7 +113,7 @@
           width="20vw"
           height="20vw"
           class="user_info_avatar"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="avatarDir + info.avatar"
         />
         <div class="user_info_detail">
           <!-- 用户名 -->
@@ -176,7 +176,22 @@
     <div class="user_info_posts_num">全部帖子 · {{ info.posts_num }}</div>
 
     <!-- 帖子 -->
-    <div></div>
+    <van-pull-refresh v-model="refreshing" @refresh="refresh">
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="getPosts"
+      >
+        <div v-for="(post, index) in posts" :key="index">
+          <Post
+            :post="post"
+            :index="index"
+            @deletePostEvent="deletePostEventHandler"
+          />
+        </div>
+      </van-list>
+    </van-pull-refresh>
 
     <!-- 底部导航栏 -->
     <van-tabbar v-model="active" placeholder v-if="isMe">
@@ -187,35 +202,100 @@
 </template>
 
 <script>
-// import { Toast } from 'vant';
-// import { apis } from '../api/apis';
+import Post from '../components/Post';
+import { Toast } from 'vant';
+import { apis } from '../api/apis';
+import { avatarDir } from '../config';
 export default {
+  name: 'user',
+  components: { Post },
   data() {
     return {
-      info: {
-        username: 'zekaio',
-        sex: '男',
-        follower: 10,
-        follow: 12,
-        grade: 2018,
-        major: '软件工程',
-        description: '自我介绍',
-        posts_num: 100,
-        uuid: 123456,
-      },
-
+      info: {},
+      posts: [],
       active: 1,
+      loading: false,
+      finished: false,
+      refreshing: false,
+      avatarDir,
     };
   },
   methods: {
-    modifyUserInfo() {},
+    // 刷新
+    refresh() {
+      let timeout = setTimeout(() => {
+        Toast.fail({
+          message: '请求超时，请重试',
+        });
+        return;
+      }, 10000);
+      apis
+        .getPosts({ username: this.username })
+        .then((res) => {
+          this.posts = res.data.data;
+          if (res.data.data.length == 0) {
+            this.finished = true;
+          } else {
+            this.finished = false;
+          }
+          this.refreshing = false;
+        })
+        .catch((err) => this.$error(err))
+        .finally(() => {
+          clearTimeout(timeout);
+        });
+    },
+
+    //获取帖子
+    getPosts() {
+      if (this.posts.length == 0) {
+        apis
+          .getPosts({ username: this.username })
+          .then((res) => {
+            this.posts = res.data.data;
+            if (res.data.data.length == 0) {
+              this.finished = true;
+            }
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
+      } else {
+        apis
+          .getPosts(
+            { username: this.username },
+            this.posts[this.posts.length - 1].post_id
+          )
+          .then((res) => {
+            if (res.data.data.length == 0) {
+              this.finished = true;
+            } else {
+              this.posts = [...this.posts, ...res.data.data];
+            }
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
+      }
+    },
+
+    // 处理删除帖子事件
+    deletePostEventHandler(index) {
+      this.posts.splice(index, 1);
+    },
   },
   async mounted() {
-    if (this.isMe) {
-      // 获取个人信息
-    } else {
-      // 获取username对应用户信息
-    }
+    apis
+      .getUserInfo({ username: this.username })
+      .then((res) => {
+        this.info = res.data.data;
+      })
+      .catch((err) =>
+        this.$error(err, (err) => {
+          if (err.response.status === 404) {
+            Toast.fail({ message: '用户不存在' });
+            return true;
+          }
+        })
+      );
   },
   computed: {
     username: function() {

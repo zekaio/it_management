@@ -15,7 +15,7 @@
 
     <!-- 头像 -->
     <van-image
-      :src="info.avatar"
+      :src="avatar"
       round
       width="23vw"
       height="23vw"
@@ -131,18 +131,12 @@
 <script>
 import { Toast, ImagePreview } from 'vant';
 import { apis } from '../api/apis';
+import { avatarDir } from '../config';
 export default {
   name: 'userInfo',
   data() {
     return {
-      info: {
-        avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
-        username: 'zekaio',
-        sex: '男',
-        grade: '',
-        major: '软件工程',
-        description: '个人介绍',
-      },
+      info: {},
 
       sexColumns: ['男', '女', '不明'],
       imageActions: [{ name: '查看头像' }, { name: '修改头像' }],
@@ -150,19 +144,24 @@ export default {
       imageActionSheetShow: false,
       sexPickerShow: false,
       gradePickerShow: false,
+
+      lock: false,
     };
   },
   methods: {
     // 退出登录
     logout() {
-      apis.logout().then(() => {
-        Toast.success({ message: '退出成功' });
-        localStorage.setItem('username', undefined);
-        localStorage.setItem('uuid', undefined);
-        this.$router.push({
-          path: '/login',
-        });
-      });
+      apis
+        .logout()
+        .then(() => {
+          Toast.success({ message: '退出成功' });
+          localStorage.setItem('username', undefined);
+          localStorage.setItem('uuid', undefined);
+          this.$router.push({
+            path: '/login',
+          });
+        })
+        .catch((err) => this.$error(err));
     },
 
     // 限制图片大小
@@ -177,7 +176,7 @@ export default {
       this.imageActionSheetShow = false;
       if (item.name == '查看头像') {
         ImagePreview({
-          images: [this.info.avatar],
+          images: [this.avatar],
           showIndex: false,
         });
       } else if (item.name == '修改头像') {
@@ -187,7 +186,13 @@ export default {
 
     // 上传图片
     afterRead(file) {
-      console.log(file.file);
+      apis
+        .uploadAvatar(file.file)
+        .then((res) => {
+          this.info.avatar = res.data.data;
+          Toast.success({ message: '上传成功' });
+        })
+        .catch((err) => this.$error(err));
     },
 
     // 确认性别
@@ -204,11 +209,31 @@ export default {
 
     // 保存信息
     onSubmit(values) {
-      console.log(values);
+      if (!this.lock) {
+        this.lock = true;
+        apis
+          .updateUserInfo(values)
+          .then(() => {
+            Toast.success({
+              message: '修改成功',
+            });
+            localStorage.setItem('username', values.username);
+          })
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.lock = false;
+          });
+      }
     },
   },
   async mounted() {
     // 获取个人信息
+    apis
+      .getUserInfo()
+      .then((res) => {
+        this.info = res.data.data;
+      })
+      .catch((err) => this.$error(err));
   },
   computed: {
     gradeColumns: function() {
@@ -217,6 +242,9 @@ export default {
       return Array.from(new Array(year + 1).keys())
         .slice(year - 10)
         .reverse();
+    },
+    avatar: function() {
+      return avatarDir + this.info.avatar;
     },
   },
 };

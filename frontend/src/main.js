@@ -32,6 +32,9 @@ import {
   Tabs,
   Sticky,
   Uploader,
+  Overlay,
+  Loading,
+  Toast,
 } from 'vant';
 
 Vue.config.productionTip = false;
@@ -65,7 +68,9 @@ Vue.use(Form)
   .use(Tab)
   .use(Tabs)
   .use(Sticky)
-  .use(Uploader);
+  .use(Uploader)
+  .use(Overlay)
+  .use(Loading);
 
 Vue.prototype.$goTo = function(path) {
   this.$router.push({
@@ -75,6 +80,17 @@ Vue.prototype.$goTo = function(path) {
 
 Vue.prototype.$back = function() {
   this.$router.back();
+};
+
+Vue.prototype.$error = function(err, errFunc) {
+  if (errFunc) {
+    if (errFunc(err)) {
+      return;
+    }
+  }
+  Toast.fail({
+    message: err.response.data.message || `未知错误${err.response.data}`,
+  });
 };
 
 new Vue({

@@ -71,22 +71,23 @@ export default {
         });
         return;
       }, 10000);
-      let req;
-      if (this.$route.query.uuid === undefined) {
-        req = apis.searchPosts(this.keyword);
-      } else {
-        req = apis.searchUserPosts(this.$route.query.uuid, this.keyword);
-      }
-      req.then((res) => {
-        this.posts = res.data.data;
-        this.refreshing = false;
-        if (res.data.data.length == 0) {
-          this.finished = true;
-        } else {
-          this.finished = false;
-        }
-        clearTimeout(timeout);
-      });
+
+      apis
+        .getPosts({
+          username: this.$route.query.username,
+          keyword: this.keyword,
+        })
+        .then((res) => {
+          this.posts = res.data.data;
+          this.refreshing = false;
+          if (res.data.data.length == 0) {
+            this.finished = true;
+          } else {
+            this.finished = false;
+          }
+          clearTimeout(timeout);
+        })
+        .catch((err) => this.$error(err));
     },
 
     // 加载帖子
@@ -95,42 +96,36 @@ export default {
         Toast.fail({ message: '关键词不能为空' });
         return;
       }
-      let req;
 
       if (this.posts.length == 0) {
-        if (this.$route.query.uuid === undefined) {
-          req = apis.searchPosts(this.keyword);
-        } else {
-          req = apis.searchUserPosts(this.$route.query.uuid, this.keyword);
-        }
-        req.then((res) => {
-          this.posts = res.data.data;
-          if (res.data.data.length == 0) {
-            this.finished = true;
-          }
-          this.loading = false;
-        });
+        apis
+          .getPosts({
+            username: this.$route.query.username,
+            keyword: this.keyword,
+          })
+          .then((res) => {
+            this.posts = res.data.data;
+            if (res.data.data.length == 0) {
+              this.finished = true;
+            }
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
       } else {
-        if (this.$route.query.uuid === undefined) {
-          req = apis.searchPosts(
-            this.keyword,
+        apis
+          .getPosts(
+            { username: this.$route.query.username, keyword: this.keyword },
             this.posts[this.posts.length - 1].post_id
-          );
-        } else {
-          req = apis.searchUserPosts(
-            this.$route.query.uuid,
-            this.keyword,
-            this.posts[this.posts.length - 1].post_id
-          );
-        }
-        req.then((res) => {
-          if (res.data.data.length == 0) {
-            this.finished = true;
-          } else {
-            this.posts = [...this.posts, ...res.data.data];
-          }
-          this.loading = false;
-        });
+          )
+          .then((res) => {
+            if (res.data.data.length == 0) {
+              this.finished = true;
+            } else {
+              this.posts = [...this.posts, ...res.data.data];
+            }
+            this.loading = false;
+          })
+          .catch((err) => this.$error(err));
       }
     },
 
@@ -142,7 +137,7 @@ export default {
 
   computed: {
     placeholderText: function() {
-      return this.$route.query.uuid === undefined
+      return this.$route.query.username === undefined
         ? '请输入搜索关键词'
         : '搜索Ta的帖子';
     },

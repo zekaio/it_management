@@ -13,7 +13,11 @@
           :src="avatarDir + comment.avatar"
           class="comment_cell_title_image"
           @click="$goTo(`/user?username=${comment.username}`)"
-        />
+        >
+          <template v-slot:loading>
+            <van-loading type="spinner" size="20" />
+          </template>
+        </van-image>
         <span class="comment_cell_title_text">
           {{ comment.username }}
           <br />
@@ -73,7 +77,6 @@ export default {
 
   methods: {
     showActionSheet() {
-      console.log(this.comment.avatar);
       this.actionSheetShow = true;
       this.$emit('hideInputEvent', true);
     },

@@ -17,6 +17,8 @@ class User(Model):
     major = db.Column(db.String(50), nullable=False, default='', comment='专业')
     description = db.Column(db.String(255), nullable=False, default='', comment='个人介绍')
     avatar = db.Column(db.String(255), nullable=False, default='default.jpg', comment='头像')
+    bg = db.Column(db.String(255), nullable=False, default='bg.jpg', comment='背景')
+
 
     def __init__(self, username: str, password: str):
         self.username = username
@@ -37,7 +39,8 @@ class User(Model):
             'grade': self.grade,
             'major': self.major,
             'description': self.description,
-            'avatar': self.avatar
+            'avatar': self.avatar,
+            'bg': self.bg
         }
 
     def update(self, **kwargs):

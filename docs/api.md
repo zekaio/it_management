@@ -217,13 +217,29 @@ PUT /users/me/avatar
 
 
 
-### U7.修改背景图
+### U7.上传背景图
+
+```http
+PUT /users/me/bg
+```
 
 #### Request Body
 
+图片文件
+
 #### Response Body
 
+```json
+{
+    "data": "背景图地址",
+    "msg": "OK",
+    "status": 200
+}
+```
+
 #### 错误
+
+`400`：上传失败/不支持的文件类型
 
 
 

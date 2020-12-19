@@ -72,8 +72,38 @@
       <!-- 背景 -->
       <van-image
         class="user_info_bg"
-        src="https://img.yzcdn.cn/vant/cat.jpeg"
+        :src="bgDir + info.bg"
         fit="cover"
+        @click="imageActionSheetShow = true"
+      >
+        <template v-slot:loading>
+          <van-loading type="spinner" size="20" />
+        </template>
+        <!-- <template v-slot:error>
+          <van-image
+            class="user_info_bg"
+            src="https://zekaio.cn/zimg/be4195b3a62a88637312bb2d84ebbc21"
+            fit="cover"
+          />
+        </template> -->
+      </van-image>
+      <!-- 弹出层 -->
+      <van-action-sheet
+        v-model="imageActionSheetShow"
+        :actions="imageActions"
+        @select="onSelectImageAction"
+        cancel-text="取消"
+        close-on-popstate
+        round
+      />
+      <!-- 上传背景 -->
+      <van-uploader
+        v-show="false"
+        ref="uploader"
+        :after-read="afterRead"
+        :max-size="2048 * 1024"
+        result-type="file"
+        @oversize="onOversize"
       />
 
       <!-- 右侧icon -->
@@ -114,7 +144,12 @@
           height="20vw"
           class="user_info_avatar"
           :src="avatarDir + info.avatar"
-        />
+          @click="showAvatar"
+        >
+          <template v-slot:loading>
+            <van-loading type="spinner" size="20" />
+          </template>
+        </van-image>
         <div class="user_info_detail">
           <!-- 用户名 -->
           {{ info.username }}
@@ -203,9 +238,9 @@
 
 <script>
 import Post from '../components/Post';
-import { Toast } from 'vant';
+import { ImagePreview, Toast } from 'vant';
 import { apis } from '../api/apis';
-import { avatarDir } from '../config';
+import { avatarDir, bgDir } from '../config';
 export default {
   name: 'user',
   components: { Post },
@@ -218,6 +253,8 @@ export default {
       finished: false,
       refreshing: false,
       avatarDir,
+      bgDir,
+      imageActionSheetShow: false,
     };
   },
   methods: {
@@ -281,6 +318,45 @@ export default {
     deletePostEventHandler(index) {
       this.posts.splice(index, 1);
     },
+
+    // 查看头像大图
+    showAvatar() {
+      ImagePreview({
+        images: [this.avatarDir + this.info.avatar],
+        showIndex: false,
+      });
+    },
+
+    // 选择背景操作
+    onSelectImageAction(item) {
+      this.imageActionSheetShow = false;
+      if (item.name == '查看背景') {
+        ImagePreview({
+          images: [bgDir + this.info.bg],
+          showIndex: false,
+        });
+      } else if (item.name == '修改背景') {
+        this.$refs.uploader.chooseFile();
+      }
+    },
+
+    // 限制图片大小
+    onOversize() {
+      Toast.fail({
+        message: '文件大小不能超过2m',
+      });
+    },
+
+    // 上传背景
+    afterRead(file) {
+      apis
+        .uploadBg(file.file)
+        .then((res) => {
+          this.info.bg = res.data.data;
+          Toast.success({ message: '上传成功' });
+        })
+        .catch((err) => this.$error(err));
+    },
   },
   async mounted() {
     apis
@@ -299,13 +375,18 @@ export default {
   },
   computed: {
     username: function() {
-      return this.$route.query.username;
+      return this.$route.query.username || localStorage.getItem('username');
     },
     isMe: function() {
       return (
         this.username === undefined ||
         this.username === localStorage.getItem('username')
       );
+    },
+    imageActions: function() {
+      return this.isMe
+        ? [{ name: '查看背景' }, { name: '修改背景' }]
+        : [{ name: '查看背景' }];
     },
   },
 };

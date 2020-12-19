@@ -123,6 +123,7 @@ def save_comment():
         'comments': [],
         'comments_num': 0,
         'created_at': ret[3],
+        'avatar': ret[4],
         **comment.to_dict()
     }).build()
 

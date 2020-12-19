@@ -10,7 +10,11 @@
           :src="avatarDir + post.avatar"
           class="post_cell_title_image"
           @click="$goTo(`/user?username=${post.username}`)"
-        />
+        >
+          <template v-slot:loading>
+            <van-loading type="spinner" size="20" />
+          </template>
+        </van-image>
         <span class="post_cell_title_text">
           {{ post.username }}
           <br />

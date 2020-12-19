@@ -97,6 +97,23 @@ apis.uploadAvatar = (file) => {
   });
 };
 
+/**
+ * 上传背景
+ * PUT /users/me/bg
+ * @param {File} file
+ */
+apis.uploadBg = (file) => {
+  let data = new FormData();
+  data.append('bg', file);
+  return instance({
+    url: '/users/me/bg',
+    method: 'put',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data,
+    showLoading: true,
+  });
+};
+
 /* 用户会话部分 */
 
 /**

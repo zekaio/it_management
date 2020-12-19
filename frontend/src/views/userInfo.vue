@@ -21,7 +21,11 @@
       height="23vw"
       @click="imageActionSheetShow = true"
       style="margin-top:2rem"
-    />
+    >
+      <template v-slot:loading>
+        <van-loading type="spinner" size="20" />
+      </template>
+    </van-image>
     <!-- 弹出层 -->
     <van-action-sheet
       v-model="imageActionSheetShow"

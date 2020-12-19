@@ -34,7 +34,11 @@
               :src="avatarDir + post.avatar"
               class="detail_post_cell_title_image"
               @click="$goTo(`/user?username=${post.username}`)"
-            />
+            >
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
             <span class="detail_post_cell_title_text">
               {{ post.username }}
               <br />
@@ -247,10 +251,10 @@ export default {
             ? apis.saveComment(this.post.post_id, 0, this.commentText)
             : apis.updateComment(this.commentMode.comment_id, this.commentText);
         })()
-          .then((res) => {
+          .then(() => {
             Toast.success({ message: '发表成功' });
             this.hideComment();
-            this.comments = [res.data.data, ...this.comments];
+            this.refresh();
           })
           .catch((err) => this.$error(err))
           .finally(() => {

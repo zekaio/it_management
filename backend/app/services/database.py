@@ -1,5 +1,5 @@
 import typing
-
+from flask import session
 from app.extends.error import HttpError
 from app.extensions import db
 from app.models.database import *
@@ -42,6 +42,20 @@ def _get_comment(**kwargs) -> Comment:
     """
     return (
         Comment
+            .query
+            .filter_by(**kwargs)
+            .first()
+    )
+
+
+def _get_follow(**kwargs) -> Follow:
+    """
+    获取关注信息
+    :param kwargs: 键值对形式，查找条件
+    :return: Follow
+    """
+    return (
+        Follow
             .query
             .filter_by(**kwargs)
             .first()
@@ -193,7 +207,16 @@ def get_user_info(uuid: str, username: str) -> dict:
     if user is None:
         raise HttpError(404, '用户不存在')
 
-    return user.to_dict()
+    if user.username == session.get('username'):
+        return user.to_dict()
+    else:
+        me: User = _get_user(uuid=session.get('uuid'))
+        follow: Follow = _get_follow(user_id=me.user_id, followed_user_id=user.user_id)
+        if follow is None:
+            status = False
+        else:
+            status = follow.status
+        return {**user.to_dict(), 'follow_status': status}
 
 
 def get_posts(uuid: str, username: str, keyword: str, last_id: int, limit: int) -> typing.List[dict]:
@@ -472,7 +495,7 @@ def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> (int, s
     db.session.add(comment)
     db.session.commit()
 
-    return comment.comment_id, user.username, user.uuid, comment.created_at
+    return comment.comment_id, user.username, user.uuid, comment.created_at, user.avatar
 
 
 def update_comment(comment_id: int, content: str, uuid: str) -> int:
@@ -550,3 +573,90 @@ def update_avatar(uuid, filename):
         raise HttpError(404, '用户不存在')
     user.avatar = filename
     db.session.commit()
+
+
+def update_bg(uuid, filename):
+    user: User = _get_user(uuid=uuid)
+    if user is None:
+        raise HttpError(404, '用户不存在')
+    user.bg = filename
+    db.session.commit()
+
+
+def follow_user_or_not(uuid: str, username: str, status: int):
+    me: User = _get_user(uuid=uuid)
+    if me is None:
+        raise HttpError(401, '用户不存在，请重新登录')
+    user: User = _get_user(username=username)
+    if user is None:
+        raise HttpError(404, '用户不存在')
+
+    follow: Follow = _get_follow(user_id=me.user_id, followed_user_id=user.user_id)
+    if follow:
+        follow.status = status
+    else:
+        follow: Follow = Follow(
+            user_id=me.user_id,
+            user_username=me.username,
+            user_avatar=me.avatar,
+            user_description=me.description,
+
+            followed_user_id=user.user_id,
+            followed_user_username=user.username,
+            followed_user_avatar=user.avatar,
+            followed_user_description=user.description
+        )
+        db.session.add(follow)
+    db.session.commit()
+
+
+def get_follow_list(uuid: str, username: str, last_follow_id: int = 0, limit: int = 20):
+    query = (
+        Follow.query.order_by(Follow.follow_id.desc()).filter_by(status=True)
+    )
+
+    if uuid:
+        user: User = _get_user(uuid=uuid)
+    else:
+        user: User = _get_user(username=username)
+    if not user:
+        raise HttpError(404, '用户不存在')
+
+    query = query.filter_by(user_id=user.user_id)
+
+    if int(last_follow_id):
+        query = query.filter(Follow.follow_id < last_follow_id)
+
+    follows: typing.List[Follow] = (
+        query
+            .limit(limit)
+            .all()
+    )
+
+    return [follow.to_dict for follow in follows]
+
+
+def get_fans_list(uuid: str, username: str, last_follow_id: int = 0, limit: int = 20):
+    query = (
+        Follow.query.order_by(Follow.follow_id.desc()).filter_by(status=True)
+    )
+
+    if uuid:
+        user: User = _get_user(uuid=uuid)
+    else:
+        user: User = _get_user(username=username)
+    if not user:
+        raise HttpError(404, '用户不存在')
+
+    query = query.filter_by(followed_user_id=user.user_id)
+
+    if int(last_follow_id):
+        query = query.filter(Follow.follow_id < last_follow_id)
+
+    follows: typing.List[Follow] = (
+        query
+            .limit(limit)
+            .all()
+    )
+
+    return [follow.to_dict for follow in follows]

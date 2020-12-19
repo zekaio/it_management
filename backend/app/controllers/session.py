@@ -26,6 +26,7 @@ def login():
 
     uuid, username = database.user_login(user.username, user.password)
     session['uuid'] = uuid
+    session['username'] = username
     return Result.OK().data({
         'uuid': uuid,
         'username': username
@@ -42,7 +43,8 @@ def logout():
         "status": 200
     }
     """
-    if session.get('uuid'):
+    if session.get('uuid') or session.get('username'):
         session['uuid'] = None
+        session['username'] = None
 
     return Result.OK().build()

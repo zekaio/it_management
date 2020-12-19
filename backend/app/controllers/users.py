@@ -65,6 +65,7 @@ def update_user_info():
     """
     user_detail: UserDetailModel = UserDetailModel.get_parameters()
     database.update_user_detail(uuid=session.get('uuid'), user_detail=user_detail.to_dict())
+    session['username'] = user_detail.username
     return Result.OK().build()
 
 
@@ -79,7 +80,6 @@ def update_user_avatar():
     }
     """
     avatar: FileStorage = request.files.get('avatar')
-    print(avatar)
     if avatar is None:
         raise HttpError(400, '上传头像失败')
     extension_name = avatar.filename.split('.')[-1]
@@ -87,12 +87,35 @@ def update_user_avatar():
         raise HttpError(400, '目前只支持jpg, png, gif格式')
 
     filename = uuid.uuid4().hex + '.' + extension_name
-    print(filename)
 
-    path = BaseConfig.upload_dir + filename
+    path = BaseConfig.avatar_dir + filename
     avatar.save(path)
     database.update_avatar(session.get('uuid'), filename)
-    filename = 'default.jpg'
+    return Result.OK().data(filename).build()
+
+
+@users_bp.route('/me/bg', methods=['PUT'])
+def update_user_background_image():
+    """
+    上传背景
+    :return: {
+        "data": "背景地址",
+        "msg": "OK",
+        "status": 200
+    }
+    """
+    img: FileStorage = request.files.get('bg')
+    if img is None:
+        raise HttpError(400, '上传头像失败')
+    extension_name = img.filename.split('.')[-1]
+    if extension_name not in ['png', 'jpg', 'jpeg', 'gif']:
+        raise HttpError(400, '目前只支持jpg, png, gif格式')
+
+    filename = uuid.uuid4().hex + '.' + extension_name
+
+    path = BaseConfig.bg_dir + filename
+    img.save(path)
+    database.update_bg(session.get('uuid'), filename)
     return Result.OK().data(filename).build()
 
 
@@ -144,3 +167,56 @@ def search_users():
         database.search_users(keyword=request.args.get('keyword'), last_user_uuid=request.args.get('last_user_uuid'),
                               limit=request.args.get('limit', default=10))
     ).build()
+
+
+@users_bp.route('/me/follow', methods=['PUT'])
+def follow_user_or_not():
+    """
+    关注或取关用户
+    """
+    data: dict = request.get_json(force=True)
+
+    username: str = data.get('username')
+    if username is None:
+        raise HttpError(400, '用户名错误')
+    if username == session.get('username'):
+        raise HttpError(400, '无法关注自己')
+
+    status: bool = data.get('status')
+    if status is None:
+        raise HttpError(400, '请选择要进行的操作')
+
+    database.follow_user_or_not(session.get('uuid'), username, status)
+    return Result.OK().build()
+
+
+@users_bp.route('/follow')
+def get_follow_list():
+    """
+    获取关注的人的列表
+    """
+    uuid = request.args.get('uuid')
+    username = request.args.get('username')
+    last_follow_id = request.args.get('last_follow_id', default=0)
+    limit = request.args.get('limit', default=20)
+
+    if uuid is None and username is None:
+        uuid = session.get('uuid')
+
+    return Result.OK().data(database.get_follow_list(uuid, username, last_follow_id, limit)).build()
+
+
+@users_bp.route('/fans')
+def get_fans_list():
+    """
+    获取粉丝列表
+    """
+    uuid = request.args.get('uuid')
+    username = request.args.get('username')
+    last_follow_id = request.args.get('last_follow_id', default=0)
+    limit = request.args.get('limit', default=20)
+
+    if uuid is None and username is None:
+        uuid = session.get('uuid')
+
+    return Result.OK().data(database.get_fans_list(uuid, username, last_follow_id, limit)).build()

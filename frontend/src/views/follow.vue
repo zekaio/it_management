@@ -47,7 +47,7 @@ import User from '../components/User';
 import { apis } from '../api/apis';
 
 export default {
-  name: 'follow',
+  name: 'Follow',
   components: { User },
   data() {
     return {

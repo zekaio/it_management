@@ -37,6 +37,7 @@
       placeholder="请输入内容"
       maxlength="120"
       show-word-limit
+      autofocus
     />
   </div>
 </template>
@@ -46,7 +47,7 @@ import { Toast } from 'vant';
 import { apis } from '../api/apis';
 
 export default {
-  name: 'edit',
+  name: 'Edit',
   data() {
     return {
       message: '',

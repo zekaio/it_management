@@ -1,15 +1,15 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import login from './views/login.vue';
-import register from './views/register.vue';
-import index from './views/index.vue';
-import detail from './views/detail.vue';
-import edit from './views/edit.vue';
-import search from './views/search.vue';
-import user from './views/user.vue';
-import userInfo from './views/userInfo.vue';
-import follow from './views/follow.vue';
+import Login from './views/Login.vue';
+import Register from './views/Register.vue';
+import Index from './views/Index.vue';
+import Detail from './views/Detail.vue';
+import Edit from './views/Edit.vue';
+import Search from './views/Search.vue';
+import User from './views/User.vue';
+import UserInfo from './views/UserInfo.vue';
+import Follow from './views/Follow.vue';
 
 Vue.use(VueRouter);
 
@@ -23,56 +23,56 @@ const routes = [
   // 首页
   {
     path: '/',
-    name: 'index',
-    component: index,
+    name: 'Index',
+    component: Index,
   },
   // 登录
   {
     path: '/login',
-    name: 'login',
-    component: login,
+    name: 'Login',
+    component: Login,
   },
   // 注册
   {
     path: '/register',
-    name: 'register',
-    component: register,
+    name: 'Register',
+    component: Register,
   },
   // 帖子详情
   {
     path: '/post/:postId/detail',
-    name: 'post',
-    component: detail,
+    name: 'Detail',
+    component: Detail,
   },
   // 编辑
   {
     path: '/post/:postId?/edit',
-    name: 'edit',
-    component: edit,
+    name: 'Edit',
+    component: Edit,
   },
   // 搜索
   {
     path: '/search',
-    name: 'search',
-    component: search,
+    name: 'Search',
+    component: Search,
   },
   // 用户主页
   {
     path: '/user',
-    name: 'user',
-    component: user,
+    name: 'User',
+    component: User,
   },
   // 用户信息
   {
     path: '/user/info',
-    name: 'userInfo',
-    component: userInfo,
+    name: 'UserInfo',
+    component: UserInfo,
   },
   // 关注列表
   {
     path: '/follow',
-    name: 'follow',
-    component: follow,
+    name: 'Follow',
+    component: Follow,
   },
 ];
 

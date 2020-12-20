@@ -53,7 +53,7 @@
 import { apis } from '../api/apis';
 
 export default {
-  name: 'login',
+  name: 'Login',
   data() {
     return {
       username: '',

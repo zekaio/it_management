@@ -64,7 +64,7 @@ import { Toast } from 'vant';
 import { apis } from '../api/apis';
 
 export default {
-  name: 'register',
+  name: 'Register',
   data() {
     return {
       username: '',

@@ -1,6 +1,6 @@
 <template>
   <div class="detail">
-    <div v-show="!showComment">
+    <div v-show="!commentShow">
       <!-- 顶部导航栏 -->
       <van-nav-bar
         :title="post.username"
@@ -93,7 +93,7 @@
 
         <!-- 输入框 -->
         <div class="detail_placeholder" v-show="!hideInput">
-          <div class="detail_bar" @click="showComment = true">
+          <div class="detail_bar" @click="showComment">
             <div class="detail_input">
               <div class="detail_input_placeholder">
                 <span class="detail_input_text">点击发表评论</span>
@@ -105,7 +105,7 @@
     </div>
 
     <!-- 评论页 -->
-    <div v-show="showComment" class="detail_comment">
+    <div v-show="commentShow" class="detail_comment">
       <van-nav-bar
         :title="commentMode.edit ? '编辑评论' : '发表评论'"
         placeholder
@@ -141,6 +141,7 @@
       </van-nav-bar>
       <div class="detail_comment_container">
         <van-field
+          id="comment_textarea"
           v-model="commentText"
           rows="10"
           autosize
@@ -161,14 +162,14 @@ import Comment from '../components/Comment';
 import { avatarDir } from '../config';
 
 export default {
-  name: 'detail',
+  name: 'Detail',
   components: { Comment },
   data() {
     return {
       post: {},
       showEmpty: false,
       tabActivate: 0,
-      showComment: false,
+      commentShow: false,
 
       commentText: '',
       commentMode: { edit: false, comment_id: 0 },
@@ -263,10 +264,18 @@ export default {
       }
     },
 
+    // 显示评论页
+    showComment() {
+      this.commentShow = true;
+      setTimeout(() => {
+        document.querySelector('#comment_textarea').focus();
+      }, 50);
+    },
+
     // 退出评论页
     hideComment() {
       this.commentText = '';
-      this.showComment = false;
+      this.commentShow = false;
       this.commentMode = { edit: false, comment_id: 0 };
     },
 
@@ -281,7 +290,7 @@ export default {
       let comment = this.comments[index];
       this.commentText = comment.content;
       this.commentMode = { edit: true, comment_id: comment.comment_id };
-      this.showComment = true;
+      this.commentShow = true;
     },
 
     // 隐藏输入框

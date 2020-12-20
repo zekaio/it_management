@@ -138,7 +138,7 @@ import { apis } from '../api/apis';
 import { avatarDir } from '../config';
 
 export default {
-  name: 'userInfo',
+  name: 'UserInfo',
   data() {
     return {
       info: {},

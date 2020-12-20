@@ -49,7 +49,7 @@ import { apis } from '../api/apis';
 import Post from '../components/Post';
 
 export default {
-  name: 'search',
+  name: 'Search',
   data() {
     return {
       keyword: '',

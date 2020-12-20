@@ -260,7 +260,7 @@ import { apis } from '../api/apis';
 import { avatarDir, bgDir } from '../config';
 
 export default {
-  name: 'user',
+  name: 'User',
   components: { Post },
   data() {
     return {

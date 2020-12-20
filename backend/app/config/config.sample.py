@@ -1,6 +1,7 @@
 class BaseConfig:
-    upload_dir = './avatars/'
-    bg_dir = './bg/'
+    dir_prefix = '.'
+    upload_dir = f'{dir_prefix}/avatars/'
+    bg_dir = f'{dir_prefix}/bg/'
 
 
 DatabaseConfig = dict(

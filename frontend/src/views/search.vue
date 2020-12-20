@@ -8,7 +8,7 @@
         show-action
         @search="search"
         @input="searched = false"
-        autofocus
+        id="search_input"
       >
         <template #left>
           <van-icon
@@ -277,7 +277,11 @@ export default {
         .catch((err) => this.$error(err));
     },
   },
-
+  async mounted() {
+    setTimeout(() => {
+      document.querySelector('#search_input').focus();
+    }, 50);
+  },
   computed: {
     placeholderText: function() {
       return this.$route.query.username === undefined

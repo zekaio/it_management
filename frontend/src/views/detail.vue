@@ -3,7 +3,7 @@
     <div v-show="!commentShow">
       <!-- 顶部导航栏 -->
       <van-nav-bar
-        :title="post.username"
+        :title="`${isPost ? '帖子' : '评论'}详情`"
         placeholder
         fixed
         z-index="100"
@@ -20,30 +20,36 @@
       </van-nav-bar>
 
       <!-- 帖子不存在占位符 -->
-      <van-empty description="帖子不存在" v-if="showEmpty"></van-empty>
+      <van-empty
+        :description="`${isPost ? '帖子' : '评论'}不存在`"
+        v-if="showEmpty"
+      ></van-empty>
 
       <!-- 帖子存在 -->
       <div v-else>
         <!-- 用户信息 -->
         <van-cell center size="large">
           <template #title>
+            <!-- 头像 -->
             <van-image
               round
               width="2.5rem"
               height="2.5rem"
-              :src="avatarDir + post.avatar"
+              :src="avatarDir + parent.avatar"
               class="detail_post_cell_title_image"
-              @click="$goTo(`/user?username=${post.username}`)"
+              @click="$goTo(`/user?username=${parent.username}`)"
             >
               <template v-slot:loading>
                 <van-loading type="spinner" size="20" />
               </template>
             </van-image>
             <span class="detail_post_cell_title_text">
-              {{ post.username }}
+              <!-- 用户名 -->
+              {{ parent.username }}
               <br />
+              <!-- 发表时间 -->
               <span style="color: #708090;">
-                {{ post.created_at }}
+                {{ parent.created_at }}
               </span>
             </span>
           </template>
@@ -51,13 +57,13 @@
 
         <!-- 帖子内容 -->
         <div class="detail_content">
-          {{ post.content }}
+          {{ parent.content }}
         </div>
 
         <!-- tabs -->
         <van-sticky :offset-top="46">
           <van-tabs v-model="tabActivate">
-            <van-tab :title="'评论 ' + post.comments_num"></van-tab>
+            <van-tab :title="'评论 ' + parent.comments_num"></van-tab>
             <van-tab title="" disabled></van-tab>
             <van-tab title="" disabled></van-tab>
             <van-tab title="" disabled></van-tab>
@@ -85,7 +91,19 @@
                   @deleteCommentEvent="deleteCommentEventHandler"
                   @editCommentEvent="editCommentEventHandler"
                   @hideInputEvent="hideInputEventHandler"
+                  @replyCommentEvent="replyCommentEventHandler"
                 ></Comment>
+                <div
+                  style="margin-left:2rem; font-size:0.2rem; color: #1E90FF;"
+                  @click="
+                    $goTo(
+                      `/post/${$route.params.postId}/comment/${comment.comment_id}`
+                    )
+                  "
+                  v-if="isPost && comment.comments_num"
+                >
+                  共{{ comment.comments_num }}条回复
+                </div>
               </div>
             </van-list>
           </van-pull-refresh>
@@ -93,7 +111,7 @@
 
         <!-- 输入框 -->
         <div class="detail_placeholder" v-show="!hideInput">
-          <div class="detail_bar" @click="showComment">
+          <div class="detail_bar" @click="replyParent">
             <div class="detail_input">
               <div class="detail_input_placeholder">
                 <span class="detail_input_text">点击发表评论</span>
@@ -166,13 +184,15 @@ export default {
   components: { Comment },
   data() {
     return {
-      post: {},
+      parent: {},
+      // comment: {},
+
       showEmpty: false,
       tabActivate: 0,
       commentShow: false,
 
       commentText: '',
-      commentMode: { edit: false, comment_id: 0 },
+      commentMode: { edit: false, comment_id: 0, parent: true }, // type true：回复主贴,false：回复评论
 
       comments: [],
 
@@ -184,16 +204,26 @@ export default {
 
       hideInput: false,
 
-      lock: false,
+      // lock: false,
       avatarDir,
     };
   },
   methods: {
     // 刷新
     refresh() {
-      if (this.post !== {}) {
+      // TODO 刷新
+      if (this.parent !== {}) {
+        let timeout = setTimeout(() => {
+          Toast.fail({
+            message: '请求超时，请重试',
+          });
+          return;
+        }, 10000);
         apis
-          .getComments(this.post.post_id, 0, 0)
+          .getComments(
+            this.isPost ? this.parent.post_id : this.parent.comment_id,
+            this.isPost ? 0 : 1
+          )
           .then((res) => {
             if (res.data.data.comments.length == 0) {
               this.finished = true;
@@ -201,46 +231,39 @@ export default {
               this.finished = false;
             }
             this.comments = res.data.data.comments;
-            this.post.comments_num = res.data.data.comments_num;
-            this.loading = false;
+            this.parent.comments_num = res.data.data.comments_num;
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            clearTimeout(timeout);
+          });
       }
       this.refreshing = false;
     },
 
     // 获取评论
     getComments() {
-      if (!this.locked && !this.finished) {
-        this.locked = true;
-        setTimeout(() => {
-          this.locked = false;
-        }, 1000);
-        if (this.post.post_id !== undefined) {
-          apis
-            .getComments(
-              this.post.post_id || this.$route.params.postId,
-              0,
-              this.comments.length
-                ? this.comments[this.comments.length - 1].comment_id
-                : 0
-            )
-            .then((res) => {
-              if (res.data.data.comments.length == 0) {
-                this.finished = true;
-                this.loading = false;
-              }
-
+      if (this.parent !== {}) {
+        apis
+          .getComments(
+            this.isPost ? this.parent.post_id : this.parent.comment_id,
+            this.isPost ? 0 : 1,
+            this.comments.length
+              ? this.comments[this.comments.length - 1].comment_id
+              : 0
+          )
+          .then((res) => {
+            if (res.data.data.comments.length == 0) {
+              this.finished = true;
+            } else {
               this.comments = [...this.comments, ...res.data.data.comments];
-            })
-            .catch((err) => this.$error(err));
-        }
-      } else if (!this.finished) {
-        setTimeout(() => {
-          this.getComments();
-        }, 1000);
+            }
+          })
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       }
-      this.loading = false;
     },
 
     // 提交评论
@@ -248,9 +271,27 @@ export default {
       if (!this.lock) {
         this.lock = true;
         (() => {
-          return this.commentMode.edit == false
-            ? apis.saveComment(this.post.post_id, 0, this.commentText)
-            : apis.updateComment(this.commentMode.comment_id, this.commentText);
+          if (this.commentMode.edit) {
+            // 编辑
+            return apis.updateComment(
+              this.commentMode.comment_id,
+              this.commentText
+            );
+          } else if (this.commentMode.parent) {
+            // 回复主贴
+            return apis.saveComment(
+              this.isPost ? this.parent.post_id : this.parent.comment_id,
+              this.isPost ? 0 : 1,
+              this.commentText
+            );
+          } else {
+            // 回复评论
+            return apis.saveComment(
+              this.commentMode.comment_id,
+              1,
+              this.commentText
+            );
+          }
         })()
           .then(() => {
             Toast.success({ message: '发表成功' });
@@ -262,6 +303,22 @@ export default {
             this.lock = false;
           });
       }
+    },
+
+    // 回复主贴
+    replyParent() {
+      this.commentMode = { edit: false, comment_id: 0, parent: true };
+      this.showComment();
+    },
+
+    // 回复评论
+    replyCommentEventHandler(index) {
+      this.commentMode = {
+        edit: false,
+        comment_id: this.comments[index].comment_id,
+        parent: false,
+      };
+      this.showComment();
     },
 
     // 显示评论页
@@ -276,13 +333,13 @@ export default {
     hideComment() {
       this.commentText = '';
       this.commentShow = false;
-      this.commentMode = { edit: false, comment_id: 0 };
+      this.commentMode = { edit: false, comment_id: 0, parent: true };
     },
 
     // 删除评论
     deleteCommentEventHandler(index) {
       this.comments.splice(index, 1);
-      this.post.comments_num = this.post.comments_num - 1;
+      this.parent.comments_num = this.parent.comments_num - 1;
     },
 
     // 修改评论
@@ -299,24 +356,50 @@ export default {
     },
   },
   async mounted() {
-    apis
-      .getPost(this.$route.params.postId, 0, 10)
-      .then((res) => {
-        this.post = res.data.data;
-        this.comments = this.post.comments;
-        if (this.comments.length == 0) {
-          this.finished = true;
-          this.loading = false;
-        }
-      })
-      .catch((err) =>
-        this.$error(err, (err) => {
-          if (err.response.status === 404) {
-            this.showEmpty = true;
-            return true;
+    if (this.isPost) {
+      apis
+        .getPost(this.$route.params.postId)
+        .then((res) => {
+          this.parent = res.data.data;
+          this.comments = this.parent.comments;
+          if (this.comments.length == 0) {
+            this.finished = true;
+            this.loading = false;
           }
         })
-      );
+        .catch((err) =>
+          this.$error(err, (err) => {
+            if (err.response.status === 404) {
+              this.showEmpty = true;
+              return true;
+            }
+          })
+        );
+    } else {
+      apis
+        .getComment(this.$route.params.commentId)
+        .then((res) => {
+          this.parent = res.data.data;
+          this.comments = this.parent.comments;
+          if (this.comments.length == 0) {
+            this.finished = true;
+            this.loading = false;
+          }
+        })
+        .catch((err) =>
+          this.$error(err, (err) => {
+            if (err.response.status === 404) {
+              this.showEmpty = true;
+              return true;
+            }
+          })
+        );
+    }
+  },
+  computed: {
+    isPost: function() {
+      return this.$route.name === 'PostDetail';
+    },
   },
 };
 </script>

@@ -41,7 +41,13 @@ const routes = [
   // 帖子详情
   {
     path: '/post/:postId/detail',
-    name: 'Detail',
+    name: 'PostDetail',
+    component: Detail,
+  },
+  // 评论详情
+  {
+    path: '/post/:postId/comment/:commentId',
+    name: 'CommentDetail',
     component: Detail,
   },
   // 编辑

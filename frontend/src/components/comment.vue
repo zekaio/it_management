@@ -1,7 +1,7 @@
 <template>
   <div
     class="comment van-hairline--bottom"
-    style="margin:2px 16px; max-height=40vh; padding-bottom: 8px"
+    style="margin:2px 1rem; max-height=40vh; padding-bottom: 8px"
   >
     <!-- 用户信息 -->
     <van-cell size="small" :border="false">
@@ -37,8 +37,16 @@
     </van-cell>
 
     <!-- 评论内容 -->
-    <div class="comment_content">
-      {{ comment.content }}
+    <div class="comment_content" @click="replyComment">
+      <span v-if="comment.type && comment.parent_id !== comment.root_id">
+        回复<span
+          style=" color: #1E90FF;"
+          @click="$goTo(`/user?username=${comment.parent_user_info.username}`)"
+        >
+          @{{ comment.parent_user_info.username }} </span
+        >:
+      </span>
+      <span>{{ comment.content }}</span>
     </div>
 
     <!-- 弹出层 -->
@@ -104,6 +112,10 @@ export default {
     onClosed() {
       this.$emit('hideInputEvent', false);
     },
+
+    replyComment() {
+      this.$emit('replyCommentEvent', this.index);
+    },
   },
 
   computed: {
@@ -122,7 +134,7 @@ export default {
   vertical-align: middle;
 }
 .comment_cell_title_text {
-  margin-left: 2vw;
+  margin-left: 1rem;
   display: inline-block;
   vertical-align: middle;
 }

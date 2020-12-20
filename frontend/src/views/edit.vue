@@ -38,6 +38,7 @@
       maxlength="120"
       show-word-limit
       autofocus
+      id="edit_textarea"
     />
   </div>
 </template>
@@ -89,6 +90,9 @@ export default {
         })
         .catch((err) => this.$error(err));
     }
+    setTimeout(() => {
+      document.querySelector('#edit_textarea').focus();
+    }, 50);
   },
 };
 </script>

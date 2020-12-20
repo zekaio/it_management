@@ -1,8 +1,11 @@
 import typing
 from flask import session
+import datetime
+
 from app.extends.error import HttpError
 from app.extensions import db
 from app.models.database import *
+
 from app.config import BaseConfig
 
 
@@ -29,7 +32,7 @@ def _get_post(**kwargs) -> Post:
     return (
         Post
             .query
-            .filter_by(**kwargs)
+            .filter_by(**kwargs, deleted_at=None)
             .first()
     )
 
@@ -43,7 +46,7 @@ def _get_comment(**kwargs) -> Comment:
     return (
         Comment
             .query
-            .filter_by(**kwargs)
+            .filter_by(**kwargs, deleted_at=None)
             .first()
     )
 
@@ -87,7 +90,7 @@ def _get_comments(last_comment_id: int = 0, limit: int = 5, **kwargs) -> typing.
         query = Comment.query
     comments: typing.List[Comment] = (
         query
-            .filter_by(**kwargs)
+            .filter_by(**kwargs, deleted_at=None)
             .order_by(Comment.comment_id.desc())
             .limit(limit)
             .all()
@@ -118,10 +121,22 @@ def _get_post_or_comment_info(obj: typing.Union[Post, Comment]) -> dict:
     else:
         user_info: dict = user.to_dict()
 
-    return {
+    d = {
         **info,
-        **user_info
+        **user_info,
     }
+
+    if type(obj) is Comment:
+        if obj.type:
+            parent: Comment = _get_comment(comment_id=obj.parent_id)
+        else:
+            parent: Post = _get_post(post_id=obj.parent_id)
+
+        parent_user: User = _get_user(user_id=parent.user_id)
+        parent_user_info: dict = parent_user.to_dict()
+        d['parent_user_info'] = parent_user_info
+
+    return d
 
 
 def create_user(username: str, password: str) -> tuple:
@@ -254,6 +269,7 @@ def get_posts(uuid: str, username: str, keyword: str, last_id: int, limit: int) 
         Post
             .query
             .order_by(Post.post_id.desc())
+            .filter_by(deleted_at=None)
     )
 
     if uuid:
@@ -384,7 +400,7 @@ def delete_post(post_id: int, uuid: str):
     post_info = _get_post_or_comment_info(post)
     if not uuid == post_info.get('uuid'):
         raise HttpError(403, '没有权限删除该帖子')
-    db.session.delete(post)
+    post.deleted_at = datetime.datetime.now()
 
     user: User = _get_user(uuid=uuid)
     if user is None:
@@ -414,15 +430,11 @@ def get_comments(parent_id: int, _type: int, limit: int = 5, last_comment_id: in
         ...
     ]
     """
-    if int(_type):
-        obj: Comment = (
-            Comment.query.get(parent_id)
-        )
-    else:
-        obj: Post = (
-            Post.query.get(parent_id)
-        )
-    return _get_comments(last_comment_id, limit, parent_id=parent_id, type=_type), obj.comments_num
+    if int(_type):  # 评论
+        obj: Comment = _get_comment(comment_id=parent_id)
+    else:  # 帖子
+        obj: Post = _get_post(post_id=parent_id)
+    return _get_comments(last_comment_id, limit, root_id=parent_id, type=_type), obj.comments_num
 
 
 def get_comment(comment_id, last_comment_id: int = 0, limit: int = 5):
@@ -460,7 +472,7 @@ def get_comment(comment_id, last_comment_id: int = 0, limit: int = 5):
 
     comment_info: dict = _get_post_or_comment_info(comment)
 
-    comments: typing.List[dict] = _get_comments(last_comment_id, limit, type=1, parent_id=comment_id)
+    comments: typing.List[dict] = _get_comments(last_comment_id, limit, type=1, root_id=comment_id)
 
     return {
         **comment_info,
@@ -480,18 +492,30 @@ def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> (int, s
     user: User = _get_user(uuid=uuid)
     if not User:
         raise HttpError(404, '用户不存在')
-    if int(_type):
+    if int(_type):  # 是评论
         comment: Comment = _get_comment(comment_id=parent_id)
         if not comment:
             raise HttpError(404, '评论不存在')
         comment.comments_num = comment.comments_num + 1
-    else:
+        if comment.type:  # 使根评论的评论数量加一
+            root_comment: Comment = _get_comment(comment_id=comment.root_id)
+            root_comment.comments_num = root_comment.comments_num + 1
+
+        post_id = comment.post_id
+        if comment.type:  # 父节点是对评论的评论，则将root_id设置为父节点的root_id
+            root_id = comment.root_id
+        else:  # 对帖子的评论，root_id设置为该评论的comment_id
+            root_id = comment.comment_id
+    else:  # 是帖子
         post: Post = _get_post(post_id=parent_id)
         if not post:
             raise HttpError(404, '帖子不存在')
         post.comments_num = post.comments_num + 1
+        root_id = post.post_id
+        post_id = post.post_id
 
-    comment = Comment(user_id=user.user_id, parent_id=parent_id, type=_type, content=content)
+    comment = Comment(user_id=user.user_id, parent_id=parent_id, root_id=root_id, post_id=post_id, type=_type,
+                      content=content)
     db.session.add(comment)
     db.session.commit()
 
@@ -534,14 +558,17 @@ def delete_comment(comment_id: int, uuid: str):
     if not uuid == comment_info.get('uuid'):
         raise HttpError(403, '没有权限删除该评论')
 
-    if int(comment.type):
+    if comment.type:
         parent_comment: Comment = _get_comment(comment_id=comment.parent_id)
         parent_comment.comments_num = parent_comment.comments_num - 1
+        if parent_comment.type:
+            root_comment: Comment = _get_comment(comment_id=comment.root_id)
+            root_comment.comments_num = root_comment.comments_num - 1
     else:
         parent_post: Post = _get_post(post_id=comment.parent_id)
         parent_post.comments_num = parent_post.comments_num - 1
 
-    db.session.delete(comment)
+    comment.deleted_at = datetime.datetime.now()
     db.session.commit()
 
 
@@ -596,6 +623,9 @@ def update_bg(uuid, filename):
 
 
 def follow_user(uuid: str, username: str, status: int):
+    """
+    关注或取关用户
+    """
     me: User = _get_user(uuid=uuid)
     if me is None:
         raise HttpError(401, '用户不存在，请重新登录')
@@ -614,14 +644,7 @@ def follow_user(uuid: str, username: str, status: int):
             raise HttpError(400, '未关注该用户')
         follow: Follow = Follow(
             user_id=me.user_id,
-            user_username=me.username,
-            user_avatar=me.avatar,
-            user_description=me.description,
-
             followed_user_id=user.user_id,
-            followed_user_username=user.username,
-            followed_user_avatar=user.avatar,
-            followed_user_description=user.description
         )
         num = 1
         db.session.add(follow)
@@ -632,6 +655,9 @@ def follow_user(uuid: str, username: str, status: int):
 
 
 def get_follow_list(uuid: str, username: str, last_follow_id: int = 0, limit: int = 20):
+    """
+    获取关注的人的列表
+    """
     query = (
         Follow.query.order_by(Follow.follow_id.desc()).filter_by(status=True)
     )
@@ -653,11 +679,27 @@ def get_follow_list(uuid: str, username: str, last_follow_id: int = 0, limit: in
             .limit(limit)
             .all()
     )
+    ret = []
 
-    return [{**follow.to_dict(), 'followed': True} for follow in follows]
+    for follow in follows:
+        d = follow.to_dict()
+        d['followed'] = True
+        followed_user: User = _get_user(user_id=follow.followed_user_id)
+        d['user_username'] = user.username
+        d['user_avatar'] = user.avatar
+        d['user_description'] = user.description
+        d['followed_user_username'] = followed_user.username
+        d['followed_user_avatar'] = followed_user.avatar
+        d['followed_user_description'] = followed_user.description
+        ret.append(d)
+
+    return ret
 
 
 def get_fans_list(uuid: str, username: str, last_follow_id: int = 0, limit: int = 20):
+    """
+    获取粉丝列表
+    """
     query = (
         Follow.query.order_by(Follow.follow_id.desc()).filter_by(status=True)
     )
@@ -679,8 +721,10 @@ def get_fans_list(uuid: str, username: str, last_follow_id: int = 0, limit: int 
             .limit(limit)
             .all()
     )
+
     ret = []
     me: User = _get_user(uuid=session.get('uuid'))
+
     for follow in follows:
         d = follow.to_dict()
         f: Follow = _get_follow(user_id=me.user_id, followed_user_id=follow.user_id, status=True)
@@ -688,5 +732,12 @@ def get_fans_list(uuid: str, username: str, last_follow_id: int = 0, limit: int 
             d['followed'] = True
         else:
             d['followed'] = False
+        fans: User = _get_user(user_id=follow.user_id)
+        d['user_username'] = fans.username
+        d['user_avatar'] = fans.avatar
+        d['user_description'] = fans.description
+        d['followed_user_username'] = user.username
+        d['followed_user_avatar'] = user.avatar
+        d['followed_user_description'] = user.description
         ret.append(d)
     return ret

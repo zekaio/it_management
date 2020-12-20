@@ -11,6 +11,7 @@ class Post(Model):
     content = db.Column(db.String(120), nullable=False, comment='内容')
     comments_num = db.Column(db.Integer, default=0, comment='评论数量')
     updated_at = db.Column(db.DateTime, server_default=func.now(), comment='修改时间')
+    deleted_at = db.Column(db.DateTime, nullable=True, default=None, comment='删除时间')
 
     def to_dict(self):
         return {
@@ -18,7 +19,7 @@ class Post(Model):
             'content': self.content,
             'comments_num': self.comments_num,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'updated_at' :self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
 
     def update_time(self):

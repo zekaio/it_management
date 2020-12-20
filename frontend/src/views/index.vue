@@ -91,7 +91,6 @@ export default {
         .getPosts()
         .then((res) => {
           this.posts = res.data.data;
-          this.refreshing = false;
           if (res.data.data.length == 0) {
             this.finished = true;
           } else {
@@ -102,6 +101,7 @@ export default {
         .finally(() => {
           clearTimeout(timeout);
         });
+      this.refreshing = false;
     },
 
     // 获取更多帖子
@@ -115,7 +115,10 @@ export default {
               this.finished = true;
             }
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       } else {
         apis
           .getPosts({}, this.posts[this.posts.length - 1].post_id)
@@ -126,9 +129,11 @@ export default {
               this.posts = [...this.posts, ...res.data.data];
             }
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       }
-      this.loading = false;
     },
 
     // 删除帖子

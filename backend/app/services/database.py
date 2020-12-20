@@ -564,7 +564,19 @@ def search_users(keyword: str, last_user_uuid: str, limit: int = 10):
         query.limit(limit).all()
     )
 
-    return [user.to_dict() for user in users]
+    ret = []
+    me: User = _get_user(uuid=session.get('uuid'))
+
+    for user in users:
+        d = user.to_dict()
+        f: Follow = _get_follow(user_id=me.user_id, followed_user_id=user.user_id, status=True)
+        if f:
+            d['followed'] = True
+        else:
+            d['followed'] = False
+        ret.append(d)
+
+    return ret
 
 
 def update_avatar(uuid, filename):

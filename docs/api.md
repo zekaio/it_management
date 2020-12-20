@@ -167,7 +167,7 @@ GET /users?uuid={uuid}&username={username}
 ### U5.查找用户
 
 ```http
-GET /users/search?query={query}&last_user_uuid={last_user_uuid}&limit={limit}
+GET /users/search?keyword={keyword}&last_user_uuid={last_user_uuid}&limit={limit}
 ```
 
 #### Response Body

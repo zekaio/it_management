@@ -293,12 +293,12 @@ export default {
           } else {
             this.finished = false;
           }
-          this.refreshing = false;
         })
         .catch((err) => this.$error(err))
         .finally(() => {
           clearTimeout(timeout);
         });
+      this.refreshing = false;
     },
 
     //获取帖子
@@ -311,9 +311,11 @@ export default {
             if (res.data.data.length == 0) {
               this.finished = true;
             }
-            this.loading = false;
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       } else {
         apis
           .getPosts(
@@ -326,9 +328,11 @@ export default {
             } else {
               this.posts = [...this.posts, ...res.data.data];
             }
-            this.loading = false;
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       }
     },
 

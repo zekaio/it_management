@@ -76,12 +76,12 @@ export default {
           } else {
             this.finished = false;
           }
-          this.refreshing = false;
         })
         .catch((err) => this.$error(err))
         .finally(() => {
           clearTimeout(timeout);
         });
+      this.refreshing = false;
     },
 
     // 获取用户信息
@@ -95,7 +95,10 @@ export default {
               this.finished = true;
             }
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       } else {
         queryMethod(
           { username: this.username },
@@ -109,9 +112,11 @@ export default {
               this.users = [...this.users, ...res.data.data];
             }
           })
-          .catch((err) => this.$error(err));
+          .catch((err) => this.$error(err))
+          .finally(() => {
+            this.loading = false;
+          });
       }
-      this.loading = false;
     },
 
     // 处理关注或取关事件

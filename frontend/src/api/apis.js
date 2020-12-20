@@ -67,16 +67,16 @@ apis.getUserInfo = (params) => {
 
 /**
  * 查找用户
- * GET /users/search?query={query}&last_user_uuid={last_user_uuid}&limit={limit}
- * @param {string} query - 查询关键字
+ * GET /users/search?keyword={keyword}&last_user_uuid={last_user_uuid}&limit={limit}
+ * @param {string} keyword - 查询关键字
  * @param {string} last_user_uuid - 最后一个用户的uuid
  * @param {number} limit - 返回数量
  */
-apis.searchUsers = (query, last_user_uuid, limit = 10) => {
+apis.searchUsers = (keyword, last_user_uuid, limit = 10) => {
   return instance({
     url: '/users/search',
     method: 'get',
-    params: { query, last_user_uuid, limit },
+    params: { keyword, last_user_uuid, limit },
   });
 };
 

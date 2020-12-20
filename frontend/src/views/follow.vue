@@ -105,7 +105,6 @@ export default {
           this.users[this.users.length - 1].follow_id
         )
           .then((res) => {
-            console.log(res);
             if (res.data.data.length === 0) {
               this.finished = true;
             } else {

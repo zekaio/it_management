@@ -420,7 +420,11 @@ export default {
       .then((res) => {
         this.info = res.data.data;
       })
-      .catch((err) => this.$error(err));
+      .catch((err) =>
+        this.$error(err, () => {
+          this.finished = true;
+        })
+      );
   },
   computed: {
     username: function() {
@@ -460,15 +464,17 @@ export default {
 .user_info_detail {
   margin-top: 1vw;
   vertical-align: middle;
+  font-size: 1.2rem;
 }
 .user_info_description {
-  margin-top: 1vw;
+  margin-top: 2vw;
   font-size: 0.7rem;
 }
 .user_info_follow {
   color: #708090;
-  margin-top: 1vw;
-  font-size: 0.5rem;
+  margin-top: 2vw;
+  font-size: 0.8rem;
+  padding-bottom: 3vw;
 }
 .user_info_other_like {
   border: 1px solid;
@@ -490,7 +496,7 @@ export default {
 .user_info_posts_num {
   color: gray;
   font-size: 0.7rem;
-  padding: 0.5rem;
+  padding: 0.5rem 0.5rem 0;
 }
 /* 顶部导航栏 */
 /* .user_nav_bar {

@@ -64,10 +64,10 @@ export default {
     onSubmit(values) {
       apis
         .login(values.username, values.password)
-        .then(() => {
-          this.$router.push({
-            path: '/',
-          });
+        .then((res) => {
+          localStorage.setItem('username', res.data.data.username);
+          localStorage.setItem('uuid', res.data.data.uuid);
+          this.$goTo('/');
         })
         .catch((err) => this.$error(err));
     },

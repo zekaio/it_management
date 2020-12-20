@@ -1,6 +1,6 @@
 <template>
   <div
-    class="comment van-hairline--bottom"
+    class="comment"
     style="margin:2px 1rem; max-height=40vh; padding-bottom: 8px"
   >
     <!-- 用户信息 -->

@@ -298,7 +298,7 @@ def get_posts(uuid: str, username: str, keyword: str, last_id: int, limit: int) 
     ret = []
     for post in posts:
         post_info: dict = _get_post_or_comment_info(post)
-        post_info['comments'] = _get_comments()
+        # post_info['comments'] = _get_comments(type=0, post_id=post.post_id)
         ret.append(post_info)
 
     return ret
@@ -434,6 +434,9 @@ def get_comments(parent_id: int, _type: int, limit: int = 5, last_comment_id: in
         obj: Comment = _get_comment(comment_id=parent_id)
     else:  # 帖子
         obj: Post = _get_post(post_id=parent_id)
+    if obj is None:
+        raise HttpError(404, f'{"评论" if int(_type) else "帖子"}不存在')
+
     return _get_comments(last_comment_id, limit, root_id=parent_id, type=_type), obj.comments_num
 
 

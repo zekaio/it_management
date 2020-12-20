@@ -65,7 +65,7 @@ export default {
             : apis.savePost(this.message);
         })()
           .then(() => {
-            Toast({
+            Toast.success({
               message: `${this.$route.params.postId ? '修改' : '发表'}成功`,
             });
             this.message = '';

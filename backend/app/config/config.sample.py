@@ -1,6 +1,6 @@
 class BaseConfig:
     dir_prefix = '.'
-    upload_dir = f'{dir_prefix}/avatars/'
+    avatar_dir = f'{dir_prefix}/avatars/'
     bg_dir = f'{dir_prefix}/bg/'
 
 

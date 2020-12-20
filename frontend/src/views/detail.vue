@@ -84,7 +84,11 @@
               @load="getComments"
               :immediate-check="false"
             >
-              <div v-for="(comment, index) in comments" :key="index">
+              <div
+                v-for="(comment, index) in comments"
+                :key="index"
+                class="van-hairline--bottom"
+              >
                 <Comment
                   :comment="comment"
                   :index="index"
@@ -94,7 +98,7 @@
                   @replyCommentEvent="replyCommentEventHandler"
                 ></Comment>
                 <div
-                  style="margin-left:2rem; font-size:0.2rem; color: #1E90FF;"
+                  style="margin-left:2rem; font-size:0.8rem; color: #1E90FF; padding-bottom:0.5rem"
                   @click="
                     $goTo(
                       `/post/${$route.params.postId}/comment/${comment.comment_id}`
@@ -417,7 +421,7 @@ export default {
   vertical-align: middle;
 }
 .detail_content {
-  padding: 5px 40px 14px;
+  padding: 1rem 2rem;
   background-color: white;
   margin-bottom: 12px;
 }

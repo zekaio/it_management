@@ -37,7 +37,7 @@
     <div
       class="content"
       @click="toDetail"
-      style="margin:2px 16px; max-height=40vh"
+      style="margin:4px 16px; max-height=40vh"
     >
       {{ post.content }}
     </div>

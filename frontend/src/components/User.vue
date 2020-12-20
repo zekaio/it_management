@@ -1,6 +1,6 @@
 <template>
   <div class="user">
-    <van-cell center>
+    <van-cell center :border="false" size="large">
       <template #title>
         <!-- 头像 -->
         <van-image
@@ -125,12 +125,13 @@ export default {
   vertical-align: middle;
   margin-left: 2vw;
   width: 60vw;
+  font-size: 1.1rem;
 }
 .user_description {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.5rem;
+  font-size: 0.8rem;
   color: #708090;
 }
 </style>

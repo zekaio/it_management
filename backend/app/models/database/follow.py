@@ -18,7 +18,11 @@ class Follow(Model):
 
     def to_dict(self):
         return dict(
+            follow_id=self.follow_id,
             user_id=self.user_id,
+            user_username=self.user_username,
+            user_avatar=self.user_avatar,
+            user_description=self.user_description,
             followed_user_id=self.followed_user_id,
             followed_user_avatar=self.followed_user_avatar,
             followed_user_username=self.followed_user_username,

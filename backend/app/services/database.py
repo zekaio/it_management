@@ -583,7 +583,7 @@ def update_bg(uuid, filename):
     db.session.commit()
 
 
-def follow_user_or_not(uuid: str, username: str, status: int):
+def follow_user(uuid: str, username: str, status: int):
     me: User = _get_user(uuid=uuid)
     if me is None:
         raise HttpError(401, '用户不存在，请重新登录')
@@ -593,8 +593,13 @@ def follow_user_or_not(uuid: str, username: str, status: int):
 
     follow: Follow = _get_follow(user_id=me.user_id, followed_user_id=user.user_id)
     if follow:
+        if follow.status == status:
+            raise HttpError(400, f'{"已" if status else "未"}关注该用户')
         follow.status = status
+        num = 1 if status else -1
     else:
+        if not status:
+            raise HttpError(400, '未关注该用户')
         follow: Follow = Follow(
             user_id=me.user_id,
             user_username=me.username,
@@ -606,7 +611,11 @@ def follow_user_or_not(uuid: str, username: str, status: int):
             followed_user_avatar=user.avatar,
             followed_user_description=user.description
         )
+        num = 1
         db.session.add(follow)
+
+    me.follow_num = me.follow_num + num
+    user.fans_num = user.fans_num + num
     db.session.commit()
 
 
@@ -633,7 +642,7 @@ def get_follow_list(uuid: str, username: str, last_follow_id: int = 0, limit: in
             .all()
     )
 
-    return [follow.to_dict for follow in follows]
+    return [{**follow.to_dict(), 'followed': True} for follow in follows]
 
 
 def get_fans_list(uuid: str, username: str, last_follow_id: int = 0, limit: int = 20):
@@ -658,5 +667,14 @@ def get_fans_list(uuid: str, username: str, last_follow_id: int = 0, limit: int 
             .limit(limit)
             .all()
     )
-
-    return [follow.to_dict for follow in follows]
+    ret = []
+    me: User = _get_user(uuid=session.get('uuid'))
+    for follow in follows:
+        d = follow.to_dict()
+        f: Follow = _get_follow(user_id=me.user_id, followed_user_id=follow.user_id, status=True)
+        if f:
+            d['followed'] = True
+        else:
+            d['followed'] = False
+        ret.append(d)
+    return ret

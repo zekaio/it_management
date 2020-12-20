@@ -9,6 +9,7 @@ import edit from './views/edit.vue';
 import search from './views/search.vue';
 import user from './views/user.vue';
 import userInfo from './views/userInfo.vue';
+import follow from './views/follow.vue';
 
 Vue.use(VueRouter);
 
@@ -66,6 +67,12 @@ const routes = [
     path: '/user/info',
     name: 'userInfo',
     component: userInfo,
+  },
+  // 关注列表
+  {
+    path: '/follow',
+    name: 'follow',
+    component: follow,
   },
 ];
 

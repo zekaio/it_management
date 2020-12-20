@@ -44,7 +44,9 @@
 <script>
 import { Toast } from 'vant';
 import { apis } from '../api/apis';
+
 export default {
+  name: 'edit',
   data() {
     return {
       message: '',

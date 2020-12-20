@@ -59,14 +59,13 @@
 import { Dialog, Toast } from 'vant';
 import { apis } from '../api/apis';
 import { avatarDir } from '../config';
+
 export default {
   name: 'Comment',
-
   props: {
     comment: Object,
     index: Number,
   },
-
   data() {
     return {
       actionSheetShow: false,
@@ -74,13 +73,14 @@ export default {
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
     };
   },
-
   methods: {
+    // 显示动作面板
     showActionSheet() {
       this.actionSheetShow = true;
       this.$emit('hideInputEvent', true);
     },
 
+    // 处理动作面板选择
     onSelect(item) {
       this.actionSheetShow = false;
       if (item.name == '编辑') {
@@ -100,6 +100,7 @@ export default {
       }
     },
 
+    // 关闭动作面板
     onClosed() {
       this.$emit('hideInputEvent', false);
     },

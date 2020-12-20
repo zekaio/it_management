@@ -18,7 +18,8 @@ class User(Model):
     description = db.Column(db.String(255), nullable=False, default='', comment='个人介绍')
     avatar = db.Column(db.String(255), nullable=False, default='default.jpg', comment='头像')
     bg = db.Column(db.String(255), nullable=False, default='bg.jpg', comment='背景')
-
+    fans_num = db.Column(db.Integer, default=0, comment='粉丝数')
+    follow_num = db.Column(db.Integer, default=0, comment='关注数')
 
     def __init__(self, username: str, password: str):
         self.username = username
@@ -40,7 +41,9 @@ class User(Model):
             'major': self.major,
             'description': self.description,
             'avatar': self.avatar,
-            'bg': self.bg
+            'bg': self.bg,
+            'fans_num': self.fans_num,
+            'follow_num': self.follow_num
         }
 
     def update(self, **kwargs):

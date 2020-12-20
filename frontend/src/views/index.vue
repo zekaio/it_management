@@ -63,6 +63,7 @@
 import Post from '../components/Post';
 import { apis } from '../api/apis';
 import { Toast } from 'vant';
+
 export default {
   name: 'index',
   components: { Post },
@@ -105,30 +106,29 @@ export default {
 
     // 获取更多帖子
     getPosts() {
-      if (this.posts.length == 0) {
+      if (this.posts.length === 0) {
         apis
           .getPosts()
           .then((res) => {
             this.posts = res.data.data;
-            if (res.data.data.length == 0) {
+            if (res.data.data.length === 0) {
               this.finished = true;
             }
-            this.loading = false;
           })
           .catch((err) => this.$error(err));
       } else {
         apis
           .getPosts({}, this.posts[this.posts.length - 1].post_id)
           .then((res) => {
-            if (res.data.data.length == 0) {
+            if (res.data.data.length === 0) {
               this.finished = true;
             } else {
               this.posts = [...this.posts, ...res.data.data];
             }
-            this.loading = false;
           })
           .catch((err) => this.$error(err));
       }
+      this.loading = false;
     },
 
     // 删除帖子

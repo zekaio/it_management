@@ -13,6 +13,7 @@ const instance = axios.create({
   showLoading: false,
 });
 
+// 响应拦截器
 instance.interceptors.response.use(
   (res) => {
     if (res.config.showLoading) {
@@ -59,11 +60,13 @@ instance.interceptors.response.use(
   }
 );
 
+// 请求拦截器
 instance.interceptors.request.use(
   (config) => {
     if (config.showLoading) {
       g.showLoading = true;
     }
+    // 给get请求添加时间戳参数防止被浏览器缓存
     if (/get/i.test(config.method)) {
       config.params = config.params || {};
       config.params.timestamp = new Date().getTime();

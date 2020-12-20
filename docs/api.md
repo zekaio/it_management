@@ -148,7 +148,10 @@ GET /users?uuid={uuid}&username={username}
     	"major": "专业",
     	"description": "个人介绍",
         "posts_num": "帖子数量",
-        "avatar": "头像文件名"
+        "avatar": "头像文件名",
+        "fans_num": "粉丝数量",
+        "follow_num": "关注的人的数量",
+        "follow_status": "boolean 是否关注，只有在获取别人的信息时"
     },
     "msg": "OK",
     "status": 200
@@ -242,6 +245,109 @@ PUT /users/me/bg
 `400`：上传失败/不支持的文件类型
 
 
+
+### U8.关注或取关用户
+
+```http
+PUT /users/me/follow
+```
+
+#### Request Body
+
+```json
+{
+	"username": "用户名",
+    "status": "bool true关注，false取关"
+}
+```
+
+#### 错误
+
+`400`：未关注/已关注该用户
+
+`404`：用户不存在
+
+
+
+### U9.获取关注的人的列表
+
+```http
+GET /users/follow?uuid={uuid}&username={username}&last_follow_id={last_follow_id}&limit={limit}
+```
+
+不传uuid和username则是获取自己的
+
+#### Response Body
+
+```json
+{
+    "data": [
+        {
+        "follow_id": "follow_id",
+        "user_id": "用户id",
+        "user_username": "用户名",
+        "user_avatar": "头像地址",
+        "user_description": "个人简介",
+        "followed_user_id": "被关注用户id",
+        "followed_user_username": "被关注用户用户名",
+        "followed_user_avatar": "被关注用户头像",
+        "followed_user_description": "被关注用户个人简介",
+        "status": "true为已关注，false为未关注"
+        },
+        ...
+    ],
+    "msg": "OK",
+    "status": 200
+}
+```
+
+#### 错误
+
+`404`：用户不存在
+
+### U10.获取粉丝列表
+
+```http
+GET /users/fans?uuid={uuid}&username={username}&last_follow_id={last_follow_id}&limit={limit}
+```
+
+不传uuid和username则是获取自己的
+
+#### Response Body
+
+```json
+{
+    "data": [
+        {
+        "follow_id": "follow_id",
+        "user_id": "用户id",
+        "user_username": "用户名",
+        "user_avatar": "头像地址",
+        "user_description": "个人简介",
+        "followed_user_id": "被关注用户id",
+        "followed_user_username": "被关注用户用户名",
+        "followed_user_avatar": "被关注用户头像",
+        "followed_user_description": "被关注用户个人简介",
+        "status": "true为已关注，false为未关注"
+        },
+        ...
+    ],
+    "msg": "OK",
+    "status": 200
+}
+```
+
+#### 错误
+
+`404`：用户不存在
+
+### U8.关注或取关用户
+
+#### Request Body
+
+#### Response Body
+
+#### 错误
 
 ## S.用户会话部分
 

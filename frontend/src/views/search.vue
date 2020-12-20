@@ -47,7 +47,9 @@
 import { Toast } from 'vant';
 import { apis } from '../api/apis';
 import Post from '../components/Post';
+
 export default {
+  name: 'search',
   data() {
     return {
       keyword: '',

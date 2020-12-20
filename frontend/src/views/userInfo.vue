@@ -136,6 +136,7 @@
 import { Toast, ImagePreview } from 'vant';
 import { apis } from '../api/apis';
 import { avatarDir } from '../config';
+
 export default {
   name: 'userInfo',
   data() {

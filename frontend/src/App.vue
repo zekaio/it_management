@@ -16,6 +16,7 @@
 import { Toast } from 'vant';
 import { apis } from './api/apis';
 import { g } from './config';
+
 export default {
   name: 'App',
   data: () => {

@@ -114,6 +114,51 @@ apis.uploadBg = (file) => {
   });
 };
 
+/**
+ * 关注或取关用户
+ * @param {string} username - 用户名
+ * @param {boolean} status - true关注，false取关
+ */
+apis.followUser = (username, status) => {
+  return instance({
+    url: '/users/me/follow',
+    method: 'put',
+    data: JSON.stringify({ username, status }),
+  });
+};
+
+/**
+ * 获取关注的人的列表
+ * GET /users/follow?uuid={uuid}&username={username}&last_follow_id={last_follow_id}&limit={limit}
+ * @param {string} uuid - uuid
+ * @param {string} username - 用户名
+ * @param {number} last_follow_id - 最后一个关注的人的id
+ * @param {number} limit - 获取数量
+ */
+apis.getFollowList = (queryParams, last_follow_id = 0, limit = 20) => {
+  return instance({
+    url: '/users/follow',
+    method: 'get',
+    params: { ...queryParams, last_follow_id, limit },
+  });
+};
+
+/**
+ * 获取粉丝列表
+ * GET /users/fans?uuid={uuid}&username={username}&last_follow_id={last_follow_id}&limit={limit}
+ * @param {string} uuid - uuid
+ * @param {string} username - 用户名
+ * @param {number} last_follow_id - 最后一个粉丝的id
+ * @param {number} limit - 获取数量
+ */
+apis.getFansList = (queryParams, last_follow_id = 0, limit = 20) => {
+  return instance({
+    url: '/users/fans',
+    method: 'get',
+    params: { ...queryParams, last_follow_id, limit },
+  });
+};
+
 /* 用户会话部分 */
 
 /**

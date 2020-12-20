@@ -68,14 +68,13 @@
 import { Dialog, Toast } from 'vant';
 import { apis } from '../api/apis';
 import { avatarDir } from '../config';
+
 export default {
   name: 'Post',
-
   props: {
     post: Object,
     index: Number,
   },
-
   data() {
     return {
       actionSheetShow: false,
@@ -83,18 +82,20 @@ export default {
       avatarDir,
     };
   },
-
   methods: {
+    // 查看帖子详情
     toDetail() {
       this.$router.push({
         path: `/post/${this.post.post_id}/detail`,
       });
     },
 
+    // 显示动作面板
     showActionSheet() {
       this.actionSheetShow = true;
     },
 
+    // 处理动作面板选择
     onSelect(item) {
       this.actionSheetShow = false;
       if (item.name == '编辑') {

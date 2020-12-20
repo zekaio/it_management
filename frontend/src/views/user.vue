@@ -131,7 +131,17 @@
 
         <!-- 他人 -->
         <div class="user_info_other" v-if="!isMe">
-          <div class="user_info_other_like">已关注</div>
+          <!-- 关注按钮 -->
+          <div
+            class="user_info_other_like"
+            :class="{
+              user_info_other_like_followed: info.follow_status,
+              user_info_other_like_not_followed: !info.follow_status,
+            }"
+            @click="followUser"
+          >
+            {{ info.follow_status ? '已' : '' }}关注
+          </div>
         </div>
       </div>
 
@@ -154,7 +164,7 @@
           <!-- 用户名 -->
           {{ info.username }}
           <!-- 年级 -->
-          {{ info.grade }}级
+          {{ info.grade ? `${info.grade}级` : '' }}
           <!-- 专业 -->
           {{ info.major }}
           <!-- 男 -->
@@ -201,8 +211,15 @@
 
         <!-- 关注和粉丝 -->
         <div class="user_info_follow">
-          <span> {{ info.follow }} 关注 </span>
-          <span style="margin-left:4vw;"> {{ info.follower }} 粉丝 </span>
+          <span @click="$goTo(`follow?type=follow&username=${info.username}`)">
+            {{ info.follow_num }} 关注
+          </span>
+          <span
+            style="margin-left:4vw;"
+            @click="$goTo(`follow?type=fans&username=${info.username}`)"
+          >
+            {{ info.fans_num }} 粉丝
+          </span>
         </div>
       </div>
     </div>
@@ -238,9 +255,10 @@
 
 <script>
 import Post from '../components/Post';
-import { ImagePreview, Toast } from 'vant';
+import { Dialog, ImagePreview, Toast } from 'vant';
 import { apis } from '../api/apis';
 import { avatarDir, bgDir } from '../config';
+
 export default {
   name: 'user',
   components: { Post },
@@ -357,6 +375,40 @@ export default {
         })
         .catch((err) => this.$error(err));
     },
+
+    // 关注用户
+    followUser() {
+      if (this.info.follow_status) {
+        Dialog.confirm({
+          message: `不再关注<b>${this.info.username}</b>`,
+          confirmButtonText: '取消关注',
+          cancelButtonText: '返回',
+          closeOnClickOverlay: true,
+        })
+          .then(() => {
+            apis
+              .followUser(this.info.username, false)
+              .then(() => {
+                this.info.follow_status = false;
+                this.info.fans_num--;
+                Toast.success({ message: '取消关注成功' });
+              })
+              .catch((err) => this.$error(err));
+          })
+          .catch(() => {
+            return;
+          });
+      } else {
+        apis
+          .followUser(this.info.username, true)
+          .then(() => {
+            this.info.follow_status = true;
+            this.info.fans_num++;
+            Toast.success({ message: '关注成功' });
+          })
+          .catch((err) => this.$error(err));
+      }
+    },
   },
   async mounted() {
     apis
@@ -364,14 +416,7 @@ export default {
       .then((res) => {
         this.info = res.data.data;
       })
-      .catch((err) =>
-        this.$error(err, (err) => {
-          if (err.response.status === 404) {
-            Toast.fail({ message: '用户不存在' });
-            return true;
-          }
-        })
-      );
+      .catch((err) => this.$error(err));
   },
   computed: {
     username: function() {
@@ -425,14 +470,19 @@ export default {
   border: 1px solid;
   padding: 0.3rem 1rem;
   border-radius: 1rem;
+}
+.user_info_other_like_followed {
   background-color: #d3d3d3;
+}
+.user_info_other_like_not_followed {
+  background-color: #409eff;
+  color: white;
 }
 .user_info_float_right {
   position: absolute;
   right: 3vw;
   margin-top: 3vw;
 }
-
 .user_info_posts_num {
   color: gray;
   font-size: 0.7rem;

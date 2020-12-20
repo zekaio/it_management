@@ -126,7 +126,16 @@ def get_user_info():
     :return: {
         "data": {
             "username": "用户名",
-            "uuid": "uuid"
+            "uuid": "uuid",
+            "sex": "性别 男、女、不明",
+    	    "grade": "年级 数字",
+    	    "major": "专业",
+    	    "description": "个人介绍",
+            "posts_num": "帖子数量",
+            "avatar": "头像文件名",
+            "follow_status": "boolean 是否关注",
+            "fans_num": "粉丝数量",
+            "follow_num": "关注的人的数量"
         },
         "msg": "OK",
         "status": 200
@@ -170,7 +179,7 @@ def search_users():
 
 
 @users_bp.route('/me/follow', methods=['PUT'])
-def follow_user_or_not():
+def follow_user():
     """
     关注或取关用户
     """
@@ -186,7 +195,7 @@ def follow_user_or_not():
     if status is None:
         raise HttpError(400, '请选择要进行的操作')
 
-    database.follow_user_or_not(session.get('uuid'), username, status)
+    database.follow_user(session.get('uuid'), username, status)
     return Result.OK().build()
 
 
@@ -194,6 +203,25 @@ def follow_user_or_not():
 def get_follow_list():
     """
     获取关注的人的列表
+    :return: {
+        "data": [
+            {
+            "follow_id": "follow_id",
+            "user_id": "用户id",
+            "user_username": "用户名",
+            "user_avatar": "头像地址",
+            "user_description": "个人简介",
+            "followed_user_id": "被关注用户id",
+            "followed_user_username": "被关注用户用户名",
+            "followed_user_avatar": "被关注用户头像",
+            "followed_user_description": "被关注用户个人简介",
+            "status": "true为已关注，false为未关注"
+            },
+            ...
+        ],
+        "msg": "OK",
+        "status": 200
+    }
     """
     uuid = request.args.get('uuid')
     username = request.args.get('username')
@@ -210,6 +238,25 @@ def get_follow_list():
 def get_fans_list():
     """
     获取粉丝列表
+    :return: {
+        "data": [
+            {
+            "follow_id": "follow_id",
+            "user_id": "用户id",
+            "user_username": "用户名",
+            "user_avatar": "头像地址",
+            "user_description": "个人简介",
+            "followed_user_id": "被关注用户id",
+            "followed_user_username": "被关注用户用户名",
+            "followed_user_avatar": "被关注用户头像",
+            "followed_user_description": "被关注用户个人简介",
+            "status": "true为已关注，false为未关注"
+            },
+            ...
+        ],
+        "msg": "OK",
+        "status": 200
+    }
     """
     uuid = request.args.get('uuid')
     username = request.args.get('username')

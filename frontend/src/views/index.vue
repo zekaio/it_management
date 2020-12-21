@@ -96,7 +96,7 @@ export default {
         .getPosts()
         .then((res) => {
           this.posts = res.data.data;
-          if (res.data.data.length == 0) {
+          if (res.data.data.length < 10) {
             this.finished = true;
           } else {
             this.finished = false;
@@ -116,7 +116,7 @@ export default {
           .getPosts()
           .then((res) => {
             this.posts = res.data.data;
-            if (res.data.data.length === 0) {
+            if (res.data.data.length < 10) {
               this.finished = true;
             }
           })
@@ -128,7 +128,7 @@ export default {
         apis
           .getPosts({}, this.posts[this.posts.length - 1].post_id)
           .then((res) => {
-            if (res.data.data.length === 0) {
+            if (res.data.data.length < 10) {
               this.finished = true;
             } else {
               this.posts = [...this.posts, ...res.data.data];

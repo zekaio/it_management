@@ -76,7 +76,7 @@ export default {
       queryMethod({ username: this.username })
         .then((res) => {
           this.users = res.data.data;
-          if (res.data.data.length === 0) {
+          if (res.data.data.length < 20) {
             this.finished = true;
           } else {
             this.finished = false;
@@ -96,7 +96,7 @@ export default {
         queryMethod({ username: this.username })
           .then((res) => {
             this.users = res.data.data;
-            if (res.data.data.length === 0) {
+            if (res.data.data.length < 20) {
               this.finished = true;
             }
           })
@@ -110,7 +110,7 @@ export default {
           this.users[this.users.length - 1].follow_id
         )
           .then((res) => {
-            if (res.data.data.length === 0) {
+            if (res.data.data.length < 20) {
               this.finished = true;
             } else {
               this.users = [...this.users, ...res.data.data];

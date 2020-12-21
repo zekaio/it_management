@@ -145,7 +145,7 @@ export default {
         })
         .then((res) => {
           this.posts = res.data.data;
-          if (res.data.data.length == 0) {
+          if (res.data.data.length < 10) {
             this.postFinished = true;
           } else {
             this.postFinished = false;
@@ -173,7 +173,7 @@ export default {
           })
           .then((res) => {
             this.posts = res.data.data;
-            if (res.data.data.length == 0) {
+            if (res.data.data.length < 10) {
               this.postFinished = true;
             }
           })
@@ -188,7 +188,7 @@ export default {
             this.posts[this.posts.length - 1].post_id
           )
           .then((res) => {
-            if (res.data.data.length == 0) {
+            if (res.data.data.length < 10) {
               this.postFinished = true;
             } else {
               this.posts = [...this.posts, ...res.data.data];
@@ -219,7 +219,7 @@ export default {
         .searchUsers(this.keyword)
         .then((res) => {
           this.users = res.data.data;
-          if (res.data.data.length === 0) {
+          if (res.data.data.length < 10) {
             this.userFinished = true;
           } else {
             this.userFinished = false;
@@ -244,7 +244,7 @@ export default {
           .searchUsers(this.keyword)
           .then((res) => {
             this.users = res.data.data;
-            if (res.data.data.length === 0) {
+            if (res.data.data.length < 10) {
               this.userFinished = true;
             }
           })
@@ -256,7 +256,7 @@ export default {
         apis
           .searchUsers(this.keyword, this.users[this.users.length - 1].uuid)
           .then((res) => {
-            if (res.data.data.length === 0) {
+            if (res.data.data.length < 10) {
               this.userFinished = true;
             } else {
               this.users = [...this.users, ...res.data.data];

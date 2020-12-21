@@ -220,7 +220,7 @@ export default {
             this.isPost ? 0 : 1
           )
           .then((res) => {
-            if (res.data.data.comments.length == 0) {
+            if (res.data.data.comments.length < 10) {
               this.finished = true;
             } else {
               this.finished = false;
@@ -248,7 +248,7 @@ export default {
               : 0
           )
           .then((res) => {
-            if (res.data.data.comments.length == 0) {
+            if (res.data.data.comments.length < 10) {
               this.finished = true;
             } else {
               this.comments = [...this.comments, ...res.data.data.comments];
@@ -386,7 +386,7 @@ export default {
         .then((res) => {
           this.parent = res.data.data;
           this.comments = this.parent.comments;
-          if (this.comments.length == 0) {
+          if (this.comments.length < 10) {
             this.finished = true;
             this.loading = false;
           }
@@ -405,7 +405,7 @@ export default {
         .then((res) => {
           this.parent = res.data.data;
           this.comments = this.parent.comments;
-          if (this.comments.length == 0) {
+          if (this.comments.length < 10) {
             this.finished = true;
             this.loading = false;
           }

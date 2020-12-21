@@ -189,7 +189,6 @@ export default {
   data() {
     return {
       parent: {},
-      // comment: {},
 
       showEmpty: false,
       tabActivate: 0,
@@ -208,15 +207,18 @@ export default {
 
       hideInput: false,
 
-      // lock: false,
       avatarDir,
     };
   },
   methods: {
+    // 判断object是否为空
+    checkObjectEmpty(obj) {
+      return Boolean(obj && Object.keys(obj).length);
+    },
+
     // 刷新
     refresh() {
-      // TODO 刷新
-      if (this.parent !== {}) {
+      if (this.checkObjectEmpty(this.parent)) {
         let timeout = setTimeout(() => {
           Toast.fail({
             message: '请求超时，请重试',
@@ -247,7 +249,7 @@ export default {
 
     // 获取评论
     getComments() {
-      if (this.parent !== {}) {
+      if (this.checkObjectEmpty(this.parent)) {
         apis
           .getComments(
             this.isPost ? this.parent.post_id : this.parent.comment_id,

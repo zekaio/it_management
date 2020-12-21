@@ -8,20 +8,24 @@
         </van-loading>
       </div>
     </van-overlay>
+
     <router-view :key="$route.fullPath"></router-view>
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant';
+
 import { apis } from './api/apis';
 import { g } from './config';
 
 export default {
   name: 'App',
+
   data: () => {
     return { g };
   },
+
   async mounted() {
     apis
       .getUserInfo()

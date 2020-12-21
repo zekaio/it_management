@@ -65,15 +65,18 @@
 
 <script>
 import { Dialog, Toast } from 'vant';
+
 import { apis } from '../api/apis';
 import { avatarDir } from '../config';
 
 export default {
   name: 'Comment',
+
   props: {
     comment: Object,
     index: Number,
   },
+
   data() {
     return {
       actionSheetShow: false,
@@ -81,6 +84,7 @@ export default {
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
     };
   },
+
   methods: {
     // 显示动作面板
     showActionSheet() {
@@ -119,7 +123,7 @@ export default {
   },
 
   computed: {
-    isOwner: function() {
+    isOwner() {
       return localStorage.getItem('uuid') === this.comment.uuid;
     },
   },

@@ -2,6 +2,7 @@ class BaseConfig:
     dir_prefix = '.'
     avatar_dir = f'{dir_prefix}/avatars/'
     bg_dir = f'{dir_prefix}/bg/'
+    post_image_dir = f'{dir_prefix}/posts/images/'
 
 
 DatabaseConfig = dict(

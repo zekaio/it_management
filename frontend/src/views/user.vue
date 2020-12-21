@@ -254,14 +254,18 @@
 </template>
 
 <script>
-import Post from '../components/Post';
 import { Dialog, ImagePreview, Toast } from 'vant';
+
 import { apis } from '../api/apis';
 import { avatarDir, bgDir } from '../config';
 
+import Post from '../components/Post';
+
 export default {
   name: 'User',
+
   components: { Post },
+
   data() {
     return {
       info: {},
@@ -275,6 +279,7 @@ export default {
       imageActionSheetShow: false,
     };
   },
+
   methods: {
     // 刷新
     refresh() {
@@ -414,6 +419,7 @@ export default {
       }
     },
   },
+
   async mounted() {
     apis
       .getUserInfo({ username: this.username })
@@ -426,17 +432,20 @@ export default {
         })
       );
   },
+
   computed: {
-    username: function() {
+    username() {
       return this.$route.query.username || localStorage.getItem('username');
     },
-    isMe: function() {
+
+    isMe() {
       return (
         this.username === undefined ||
         this.username === localStorage.getItem('username')
       );
     },
-    imageActions: function() {
+
+    imageActions() {
       return this.isMe
         ? [{ name: '查看背景' }, { name: '修改背景' }]
         : [{ name: '查看背景' }];

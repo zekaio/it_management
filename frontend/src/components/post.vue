@@ -1,7 +1,7 @@
 <template>
   <div class="post">
     <!-- 用户信息 -->
-    <van-cell center>
+    <van-cell center :size="large">
       <template #title>
         <van-image
           round
@@ -23,7 +23,7 @@
           </span>
         </span>
       </template>
-      <template #right-icon>
+      <template #right-icon v-if="!detail">
         <van-icon
           name="arrow-down"
           @click="showActionSheet"
@@ -39,11 +39,53 @@
       @click="toDetail"
       style="margin:4px 16px; max-height=40vh"
     >
-      {{ post.content }}
+      <!-- 文字 -->
+      <div>{{ post.content }}</div>
+
+      <!-- 图片 -->
+      <div
+        v-if="post.imgs_name && post.imgs_name.length"
+        class="post_imgs"
+        :style="
+          post.imgs_name && post.imgs_name.length === 1
+            ? 'justify-content: flex-start;'
+            : ''
+        "
+      >
+        <div
+          :class="img_class"
+          style="display:inline-block"
+          v-for="(img_name, index) in post.imgs_name"
+          :key="index"
+        >
+          <van-image
+            :src="postImageDir + img_name"
+            fit="cover"
+            @click="previewImage($event, postImageDir + img_name)"
+          >
+            <template v-slot:loading>
+              <van-loading type="spinner" size="20" />
+            </template>
+            <template v-slot:error>
+              <van-image
+                style="display:inline-block"
+                :class="img_class"
+                :style="
+                  post.imgs_name && post.imgs_name.length === 1
+                    ? 'justify-content: flex-start; flex-direction: row; '
+                    : ''
+                "
+                @click="previewImage($event, errorImage)"
+                :src="errorImage"
+              ></van-image>
+            </template>
+          </van-image>
+        </div>
+      </div>
     </div>
 
     <!-- 底部导航 -->
-    <van-goods-action style="position: relative;">
+    <van-goods-action style="position: relative;" v-if="!detail">
       <van-goods-action-icon
         style="margin: auto;"
         icon="chat-o"
@@ -65,23 +107,31 @@
 </template>
 
 <script>
-import { Dialog, Toast } from 'vant';
+import { Dialog, ImagePreview, Toast } from 'vant';
+
 import { apis } from '../api/apis';
-import { avatarDir } from '../config';
+import { avatarDir, postImageDir, errorImage } from '../config';
 
 export default {
   name: 'Post',
+
   props: {
     post: Object,
-    index: Number,
+    index: { type: Number, default: 0 },
+    large: { type: String, default: '' },
+    detail: { type: Boolean, default: false },
   },
+
   data() {
     return {
       actionSheetShow: false,
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
       avatarDir,
+      postImageDir,
+      errorImage,
     };
   },
+
   methods: {
     // 查看帖子详情
     toDetail() {
@@ -116,15 +166,36 @@ export default {
         });
       }
     },
+
+    // 预览图片
+    previewImage(e, img_url) {
+      e.stopPropagation();
+      e.preventDefault();
+      ImagePreview({ images: [img_url], showIndex: false });
+    },
   },
 
   computed: {
-    isOwner: function() {
+    isOwner() {
       return localStorage.getItem('uuid') === this.post.uuid;
     },
 
-    commentsNum: function() {
+    commentsNum() {
       return this.post.comments_num + '';
+    },
+
+    img_class() {
+      if (!this.post.imgs_name) return '';
+      switch (this.post.imgs_name.length) {
+        case 0:
+          return '';
+        case 1:
+          return 'post_imgs_one';
+        case 2:
+          return 'post_imgs_two';
+        default:
+          return 'post_imgs_multiple';
+      }
     },
   },
 };
@@ -143,5 +214,34 @@ export default {
   margin-left: 2vw;
   display: inline-block;
   vertical-align: middle;
+}
+.post_imgs {
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-right: -3px;
+  margin-top: 8px;
+}
+.post_imgs_one {
+  margin-right: 3px;
+  justify-content: flex-start;
+  width: 70%;
+}
+.post_imgs_two {
+  width: 100%;
+  margin-right: 3px;
+}
+.post_imgs_multiple {
+  margin-right: 3px;
+  width: 100%;
+}
+</style>
+
+<style>
+.post_imgs > div > div > .van-image__error {
+  position: relative;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 </style>

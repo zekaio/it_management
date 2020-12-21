@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Toast } from 'vant';
+
 import router from '../router';
 import { baseURL, g } from '../config';
 

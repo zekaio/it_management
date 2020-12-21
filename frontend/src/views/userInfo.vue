@@ -134,11 +134,13 @@
 
 <script>
 import { Toast, ImagePreview } from 'vant';
+
 import { apis } from '../api/apis';
 import { avatarDir } from '../config';
 
 export default {
   name: 'UserInfo',
+
   data() {
     return {
       info: {},
@@ -153,6 +155,7 @@ export default {
       lock: false,
     };
   },
+
   methods: {
     // 退出登录
     logout() {
@@ -231,6 +234,7 @@ export default {
       }
     },
   },
+
   async mounted() {
     // 获取个人信息
     apis
@@ -240,15 +244,17 @@ export default {
       })
       .catch((err) => this.$error(err));
   },
+
   computed: {
-    gradeColumns: function() {
+    gradeColumns() {
       let date = new Date();
       let year = date.getFullYear();
       return Array.from(new Array(year + 1).keys())
         .slice(year - 10)
         .reverse();
     },
-    avatar: function() {
+
+    avatar() {
       return avatarDir + this.info.avatar;
     },
   },

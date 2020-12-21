@@ -88,12 +88,15 @@
 
 <script>
 import { Toast } from 'vant';
+
 import { apis } from '../api/apis';
+
 import Post from '../components/Post';
 import User from '../components/User';
 
 export default {
   name: 'Search',
+
   data() {
     return {
       keyword: '',
@@ -111,7 +114,9 @@ export default {
       userRefreshing: false,
     };
   },
+
   components: { Post, User },
+
   methods: {
     // 搜索
     async search() {
@@ -277,13 +282,15 @@ export default {
         .catch((err) => this.$error(err));
     },
   },
+
   async mounted() {
     setTimeout(() => {
       document.querySelector('#search_input').focus();
     }, 50);
   },
+
   computed: {
-    placeholderText: function() {
+    placeholderText() {
       return this.$route.query.username === undefined
         ? '请输入搜索关键词'
         : '搜索Ta的帖子';

@@ -70,10 +70,12 @@
 
 <script>
 import { Dialog } from 'vant';
+
 import { avatarDir } from '../config';
 
 export default {
   name: 'User',
+
   props: {
     avatar: String,
     username: String,
@@ -81,9 +83,11 @@ export default {
     followed: Boolean,
     index: Number,
   },
+
   data() {
     return { avatarDir };
   },
+
   methods: {
     onFollow() {
       if (this.followed) {
@@ -104,9 +108,9 @@ export default {
       }
     },
   },
-  async mounted() {},
+
   computed: {
-    isMe: function() {
+    isMe() {
       return this.username === localStorage.getItem('username');
     },
   },

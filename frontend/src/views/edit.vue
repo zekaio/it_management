@@ -29,6 +29,7 @@
       </template>
     </van-nav-bar>
 
+    <!-- 输入框 -->
     <van-field
       v-model="message"
       rows="10"
@@ -40,38 +41,63 @@
       autofocus
       id="edit_textarea"
     />
+
+    <!-- 上传图片 -->
+    <div style=" margin: 1rem 24px 0 32px;">
+      <van-uploader
+        :preview-size="(windowWidth - 80) / 3"
+        v-model="imageList"
+        multiple
+        :max-count="9"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant';
+
 import { apis } from '../api/apis';
+import { postImageDir } from '../config';
 
 export default {
   name: 'Edit',
+
   data() {
     return {
       message: '',
       lock: false,
+      imageList: [],
     };
   },
+
   methods: {
     submit() {
       if (!this.lock) {
+        if (this.message === '') {
+          Toast.fail({ message: '帖子内容不能为空' });
+          return;
+        }
+
         this.lock = true;
+        let data = new FormData();
+        for (let i = 0; i < this.imageList.length; i++) {
+          data.append('imgs', this.imageList[i].file);
+        }
+        data.append('content', this.message);
+
         (() => {
           return this.$route.params.postId
-            ? apis.updatePost(this.$route.params.postId, this.message)
-            : apis.savePost(this.message);
+            ? apis.updatePost(this.$route.params.postId, data)
+            : apis.savePost(data);
         })()
           .then(() => {
             Toast.success({
               message: `${this.$route.params.postId ? '修改' : '发表'}成功`,
             });
             this.message = '';
-            this.$router.push({
-              path: '/',
-            });
+            this.imageList = [];
+            this.$back();
           })
           .catch((err) => this.$error(err))
           .finally(() => {
@@ -87,12 +113,33 @@ export default {
         .getPost(this.$route.params.postId)
         .then((res) => {
           this.message = res.data.data.content;
+          for (let i = 0; i < res.data.data.imgs_name.length; i++) {
+            let img_name = res.data.data.imgs_name[i];
+            fetch(postImageDir + img_name)
+              .then((res) => res.blob())
+              .then((res) => {
+                const file = new File([res], img_name, {
+                  type: res.type,
+                });
+                this.imageList.push({
+                  url: postImageDir + img_name,
+                  isImage: true,
+                  file,
+                });
+              });
+          }
         })
         .catch((err) => this.$error(err));
     }
     setTimeout(() => {
       document.querySelector('#edit_textarea').focus();
     }, 50);
+  },
+
+  computed: {
+    windowWidth() {
+      return window.innerWidth;
+    },
   },
 };
 </script>

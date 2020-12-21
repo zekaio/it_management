@@ -7,6 +7,7 @@ from app.services import database
 from app.extends.result import Result
 from app.extends.error import HttpError
 from app.config import BaseConfig
+from app.extends.helper import save_image
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -80,16 +81,8 @@ def update_user_avatar():
     }
     """
     avatar: FileStorage = request.files.get('avatar')
-    if avatar is None:
-        raise HttpError(400, '上传头像失败')
-    extension_name = avatar.filename.split('.')[-1]
-    if extension_name not in ['png', 'jpg', 'jpeg', 'gif']:
-        raise HttpError(400, '目前只支持jpg, png, gif格式')
+    filename = save_image(BaseConfig.avatar_dir, avatar)
 
-    filename = uuid.uuid4().hex + '.' + extension_name
-
-    path = BaseConfig.avatar_dir + filename
-    avatar.save(path)
     database.update_avatar(session.get('uuid'), filename)
     return Result.OK().data(filename).build()
 
@@ -104,17 +97,9 @@ def update_user_background_image():
         "status": 200
     }
     """
-    img: FileStorage = request.files.get('bg')
-    if img is None:
-        raise HttpError(400, '上传头像失败')
-    extension_name = img.filename.split('.')[-1]
-    if extension_name not in ['png', 'jpg', 'jpeg', 'gif']:
-        raise HttpError(400, '目前只支持jpg, png, gif格式')
+    bg: FileStorage = request.files.get('bg')
+    filename = save_image(BaseConfig.bg_dir, bg)
 
-    filename = uuid.uuid4().hex + '.' + extension_name
-
-    path = BaseConfig.bg_dir + filename
-    img.save(path)
     database.update_bg(session.get('uuid'), filename)
     return Result.OK().data(filename).build()
 

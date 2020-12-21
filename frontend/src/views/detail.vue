@@ -27,38 +27,12 @@
 
       <!-- 帖子存在 -->
       <div v-else>
-        <!-- 用户信息 -->
-        <van-cell center size="large">
-          <template #title>
-            <!-- 头像 -->
-            <van-image
-              round
-              width="2.5rem"
-              height="2.5rem"
-              :src="avatarDir + parent.avatar"
-              class="detail_post_cell_title_image"
-              @click="$goTo(`/user?username=${parent.username}`)"
-            >
-              <template v-slot:loading>
-                <van-loading type="spinner" size="20" />
-              </template>
-            </van-image>
-            <span class="detail_post_cell_title_text">
-              <!-- 用户名 -->
-              {{ parent.username }}
-              <br />
-              <!-- 发表时间 -->
-              <span style="color: #708090;">
-                {{ parent.created_at }}
-              </span>
-            </span>
-          </template>
-        </van-cell>
-
-        <!-- 帖子内容 -->
-        <div class="detail_content">
-          {{ parent.content }}
-        </div>
+        <Post
+          style="margin-bottom: 12px; padding-bottom: 1rem;"
+          :post="parent"
+          large="large"
+          :detail="true"
+        />
 
         <!-- tabs -->
         <van-sticky :offset-top="46">
@@ -178,14 +152,19 @@
 </template>
 
 <script>
-import { apis } from '../api/apis';
 import { Toast } from 'vant';
-import Comment from '../components/Comment';
+
+import { apis } from '../api/apis';
 import { avatarDir } from '../config';
+
+import Comment from '../components/Comment';
+import Post from '../components/Post';
 
 export default {
   name: 'Detail',
-  components: { Comment },
+
+  components: { Comment, Post },
+
   data() {
     return {
       parent: {},
@@ -210,6 +189,7 @@ export default {
       avatarDir,
     };
   },
+
   methods: {
     // 判断object是否为空
     checkObjectEmpty(obj) {
@@ -361,6 +341,7 @@ export default {
       this.hideInput = hide;
     },
   },
+
   async mounted() {
     if (this.isPost) {
       apis
@@ -402,8 +383,9 @@ export default {
         );
     }
   },
+
   computed: {
-    isPost: function() {
+    isPost() {
       return this.$route.name === 'PostDetail';
     },
   },
@@ -413,19 +395,6 @@ export default {
 <style scoped>
 .detail {
   min-height: 100vh;
-}
-.detail_post_cell_title_image {
-  vertical-align: middle;
-}
-.detail_post_cell_title_text {
-  margin-left: 2vw;
-  display: inline-block;
-  vertical-align: middle;
-}
-.detail_content {
-  padding: 1rem 2rem;
-  background-color: white;
-  margin-bottom: 12px;
 }
 .detail_placeholder {
   height: 54px;

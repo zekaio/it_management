@@ -223,13 +223,15 @@ apis.getPost = (post_id, last_comment_id = 0, limit = 10) => {
 /**
  * 发表帖子
  * POST /posts
- * @param {string} content - 内容
+ * @param {string} data - formdata 包含图片和文字
  */
-apis.savePost = (content) => {
+apis.savePost = (data) => {
   return instance({
     url: '/posts',
     method: 'post',
-    data: JSON.stringify({ content }),
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data,
+    showLoading: true,
   });
 };
 
@@ -237,13 +239,15 @@ apis.savePost = (content) => {
  * 修改帖子
  * PUT /posts/{post_id}
  * @param {number} post_id - 帖子id
- * @param {string} content - 新内容
+ * @param {string} data - formdata 包含图片和文字
  */
-apis.updatePost = (post_id, content) => {
+apis.updatePost = (post_id, data) => {
   return instance({
     url: `/posts/${post_id}`,
     method: 'put',
-    data: JSON.stringify({ content }),
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data,
+    showLoading: true,
   });
 };
 

@@ -43,12 +43,16 @@
 
 <script>
 import { Toast } from 'vant';
-import User from '../components/User';
+
 import { apis } from '../api/apis';
+
+import User from '../components/User';
 
 export default {
   name: 'Follow',
+
   components: { User },
+
   data() {
     return {
       loading: false, // list是否在加载
@@ -57,6 +61,7 @@ export default {
       users: [],
     };
   },
+
   methods: {
     // 刷新
     refresh() {
@@ -136,20 +141,20 @@ export default {
         .catch((err) => this.$error(err));
     },
   },
-  async mounted() {},
+
   computed: {
     // 页面类型，关注还是粉丝
-    type: function() {
+    type() {
       return this.$route.query.type;
     },
 
     // 对应用户的用户名
-    username: function() {
+    username() {
       return this.$route.query.username;
     },
 
     // 当前页面是否是关注
-    isFollow: function() {
+    isFollow() {
       return this.type === 'follow';
     },
   },

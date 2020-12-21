@@ -60,13 +60,17 @@
 </template>
 
 <script>
-import Post from '../components/Post';
-import { apis } from '../api/apis';
 import { Toast } from 'vant';
+
+import { apis } from '../api/apis';
+
+import Post from '../components/Post';
 
 export default {
   name: 'index',
+
   components: { Post },
+
   data() {
     return {
       active: 0, // 底部导航栏活动位置
@@ -78,6 +82,7 @@ export default {
       posts: [], // 帖子
     };
   },
+
   methods: {
     // 刷新
     refresh() {

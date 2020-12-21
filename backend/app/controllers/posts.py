@@ -1,9 +1,12 @@
 from flask import Blueprint, request, session
+from werkzeug.datastructures import FileStorage
+import typing
 
 from app.services import database
 from app.extends.result import Result
 from app.extends.error import HttpError
-from app.extends.helper import check_post_or_comment_content
+from app.extends.helper import check_post_or_comment_content, save_image
+from app.config import BaseConfig
 
 posts_bp = Blueprint('posts', __name__, url_prefix='/posts')
 
@@ -115,12 +118,14 @@ def save_post():
         "status": 200
     }
     """
-    content: str = request.get_json(force=True).get('content')
+    content: str = request.form.get('content')
     ret = check_post_or_comment_content(content)
     if ret is not True:
         raise HttpError(400, ret)
 
-    post_id = database.save_post(content, session.get('uuid'))
+    imgs_name = [save_image(BaseConfig.post_image_dir, img) for img in request.files.getlist('imgs')]
+
+    post_id = database.save_post(content, imgs_name, session.get('uuid'))
 
     return Result.OK().data({
         'post_id': post_id
@@ -141,14 +146,17 @@ def update_post(post_id: int):
         "status": 200
     }
     """
-    content: str = request.get_json(force=True).get('content')
+    content: str = request.form.get('content')
     ret = check_post_or_comment_content(content)
     if ret is not True:
         raise HttpError(400, ret)
 
+    imgs_name = [save_image(BaseConfig.post_image_dir, img) for img in request.files.getlist('imgs')]
+
     return Result.OK().data({
         'post_id': database.update_post(
             content=content,
+            imgs_name=imgs_name,
             uuid=session.get('uuid'),
             post_id=post_id)
     }).build()

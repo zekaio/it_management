@@ -346,10 +346,11 @@ def get_post(post_id: int, last_comment_id: int = 0, limit: int = 5):
     }
 
 
-def save_post(content: str, uuid: str) -> int:
+def save_post(content: str, imgs_name: list, uuid: str) -> int:
     """
     保存帖子
     :param content: 帖子内容
+    :param imgs_name: 图片名
     :param uuid: 发帖人uuid
     :return: post_id
     """
@@ -357,7 +358,7 @@ def save_post(content: str, uuid: str) -> int:
     if not User:
         raise HttpError(404, '用户不存在')
 
-    post = Post(content=content, user_id=user.user_id)
+    post = Post(content=content, user_id=user.user_id, imgs_name=imgs_name)
     db.session.add(post)
     user.posts_num = user.posts_num + 1
     db.session.commit()
@@ -365,10 +366,11 @@ def save_post(content: str, uuid: str) -> int:
     return post.post_id
 
 
-def update_post(content: str, uuid: str, post_id: int) -> int:
+def update_post(content: str, imgs_name: list, uuid: str, post_id: int) -> int:
     """
     修改帖子
     :param content: 新内容
+    :param imgs_name: 图片名
     :param uuid: 发贴人uuid
     :param post_id: 帖子id
     :return: post_id
@@ -382,6 +384,7 @@ def update_post(content: str, uuid: str, post_id: int) -> int:
         raise HttpError(403, '没有权限修改该帖子')
 
     post.content = content
+    post.imgs_name = imgs_name
     db.session.commit()
 
     return post.post_id

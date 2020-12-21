@@ -54,12 +54,14 @@ import { apis } from '../api/apis';
 
 export default {
   name: 'Login',
+
   data() {
     return {
       username: '',
       password: '',
     };
   },
+
   methods: {
     onSubmit(values) {
       apis

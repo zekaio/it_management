@@ -1,4 +1,7 @@
 import typing
+from werkzeug.datastructures import FileStorage
+import uuid
+from app.extends.error import HttpError
 
 
 def check_username(username: str) -> typing.Union[bool, str]:
@@ -28,7 +31,21 @@ def check_sex(sex: str) -> typing.Union[bool, str]:
         return '性别错误'
     return True
 
+
 def check_description(description) -> typing.Union[bool, str]:
     if len(description) > 50:
         return '自我介绍不能超过50字'
     return True
+
+
+def save_image(dir_name: str, img: FileStorage) -> str:
+    if img is None:
+        raise HttpError(400, '上传图片失败')
+    extension_name = img.filename.split('.')[-1]
+    if extension_name not in ['png', 'jpg', 'jpeg', 'gif']:
+        raise HttpError(400, '目前只支持jpg, png, gif格式')
+    filename = uuid.uuid4().hex + '.' + extension_name
+    path = dir_name + filename
+    img.save(path)
+
+    return filename

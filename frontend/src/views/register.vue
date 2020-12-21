@@ -61,10 +61,12 @@
 
 <script>
 import { Toast } from 'vant';
+
 import { apis } from '../api/apis';
 
 export default {
   name: 'Register',
+
   data() {
     return {
       username: '',
@@ -72,6 +74,7 @@ export default {
       checkPwd: '',
     };
   },
+
   methods: {
     onSubmit(values) {
       apis

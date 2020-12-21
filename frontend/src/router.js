@@ -26,54 +26,63 @@ const routes = [
     name: 'Index',
     component: Index,
   },
+
   // 登录
   {
     path: '/login',
     name: 'Login',
     component: Login,
   },
+
   // 注册
   {
     path: '/register',
     name: 'Register',
     component: Register,
   },
+
   // 帖子详情
   {
     path: '/post/:postId/detail',
     name: 'PostDetail',
     component: Detail,
   },
+
   // 评论详情
   {
     path: '/post/:postId/comment/:commentId',
     name: 'CommentDetail',
     component: Detail,
   },
+
   // 编辑
   {
     path: '/post/:postId?/edit',
     name: 'Edit',
     component: Edit,
   },
+
   // 搜索
   {
     path: '/search',
     name: 'Search',
     component: Search,
   },
+
   // 用户主页
   {
     path: '/user',
     name: 'User',
     component: User,
   },
+
   // 用户信息
   {
     path: '/user/info',
     name: 'UserInfo',
     component: UserInfo,
   },
+
   // 关注列表
   {
     path: '/follow',

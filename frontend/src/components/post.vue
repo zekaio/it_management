@@ -43,44 +43,57 @@
       <div>{{ post.content }}</div>
 
       <!-- 图片 -->
-      <div
-        v-if="post.imgs_name && post.imgs_name.length"
-        class="post_imgs"
-        :style="
-          post.imgs_name && post.imgs_name.length === 1
-            ? 'justify-content: flex-start;'
-            : ''
-        "
-      >
-        <div
-          :class="img_class"
-          style="display:inline-block"
-          v-for="(img_name, index) in post.imgs_name"
-          :key="index"
+      <div v-if="post.imgs_name && post.imgs_name.length >= 2">
+        <van-grid
+          :border="false"
+          square
+          gutter="4"
+          :column-num="post.imgs_name.length >= 3 ? 3 : post.imgs_name.length"
         >
-          <van-image
-            :src="postImageDir + img_name"
-            fit="cover"
-            @click="previewImage($event, postImageDir + img_name)"
+          <van-grid-item
+            v-for="(img_name, index) in post.imgs_name"
+            :key="index"
           >
-            <template v-slot:loading>
-              <van-loading type="spinner" size="20" />
-            </template>
-            <template v-slot:error>
-              <van-image
-                style="display:inline-block"
-                :class="img_class"
-                :style="
-                  post.imgs_name && post.imgs_name.length === 1
-                    ? 'justify-content: flex-start; flex-direction: row; '
-                    : ''
-                "
-                @click="previewImage($event, errorImage)"
-                :src="errorImage"
-              ></van-image>
-            </template>
-          </van-image>
-        </div>
+            <van-image
+              :src="postImageDir + img_name"
+              fit="cover"
+              @click="previewImage($event, postImageDir + img_name)"
+            >
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+              <template v-slot:error>
+                <van-image
+                  style="display:inline-block"
+                  :class="img_class"
+                  @click="previewImage($event, errorImage)"
+                  :src="errorImage"
+                ></van-image>
+              </template>
+            </van-image>
+          </van-grid-item>
+        </van-grid>
+      </div>
+
+      <div v-if="post.imgs_name && post.imgs_name.length === 1">
+        <van-image
+          :src="postImageDir + post.imgs_name[0]"
+          fit="cover"
+          class="post_imgs_one"
+          @click="previewImage($event, postImageDir + post.imgs_name[0])"
+        >
+          <template v-slot:loading>
+            <van-loading type="spinner" size="20" />
+          </template>
+          <template v-slot:error>
+            <van-image
+              style="display:inline-block; justify-content: flex-start; flex-direction: row;"
+              :class="img_class"
+              @click="previewImage($event, errorImage)"
+              :src="errorImage"
+            ></van-image>
+          </template>
+        </van-image>
       </div>
     </div>
 

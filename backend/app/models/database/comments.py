@@ -14,7 +14,7 @@ class Comment(Model):
     type = db.Column(db.Integer, default=0, comment='是什么的评论，0是帖子，1是评论')
     content = db.Column(db.String(120), nullable=False, comment='内容')
     comments_num = db.Column(db.Integer, default=0, comment='评论数量')
-    img_name = db.Column(db.JSON, nullable=True, comment='评论图片')
+    img_name = db.Column(db.String(255), nullable=True, default=None, comment='评论图片')
 
     updated_at = db.Column(db.DateTime, server_default=func.now(), comment='修改时间')
     deleted_at = db.Column(db.DateTime, nullable=True, default=None, comment='删除时间')

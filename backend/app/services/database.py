@@ -529,7 +529,6 @@ def save_comment(content: str, img_name: str, parent_id: int, _type: int, uuid: 
     db.session.commit()
 
 
-
 def update_comment(comment_id: int, img_name: str, content: str, uuid: str) -> int:
     """
     更新评论
@@ -550,7 +549,6 @@ def update_comment(comment_id: int, img_name: str, content: str, uuid: str) -> i
     comment.content = content
     comment.img_name = img_name
     db.session.commit()
-
 
 
 def delete_comment(comment_id: int, uuid: str):

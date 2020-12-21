@@ -486,10 +486,11 @@ def get_comment(comment_id, last_comment_id: int = 0, limit: int = 5):
     }
 
 
-def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> (int, str, str):
+def save_comment(content: str, img_name: str, parent_id: int, _type: int, uuid: str) -> (int, str, str):
     """
     发表评论
     :param content: 评论内容
+    :param img_name: 图片名
     :param parent_id: 被评论的帖子或评论的id
     :param _type: 是什么的评论，0是帖子，1是评论
     :param uuid: 发表评论的用户的uuid
@@ -498,6 +499,7 @@ def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> (int, s
     user: User = _get_user(uuid=uuid)
     if not User:
         raise HttpError(404, '用户不存在')
+
     if int(_type):  # 是评论
         comment: Comment = _get_comment(comment_id=parent_id)
         if not comment:
@@ -521,17 +523,18 @@ def save_comment(content: str, parent_id: int, _type: int, uuid: str) -> (int, s
         post_id = post.post_id
 
     comment = Comment(user_id=user.user_id, parent_id=parent_id, root_id=root_id, post_id=post_id, type=_type,
-                      content=content)
+                      content=content, img_name=img_name)
+
     db.session.add(comment)
     db.session.commit()
 
-    return comment.comment_id, user.username, user.uuid, comment.created_at, user.avatar
 
 
-def update_comment(comment_id: int, content: str, uuid: str) -> int:
+def update_comment(comment_id: int, img_name: str, content: str, uuid: str) -> int:
     """
     更新评论
     :param comment_id: 评论id
+    :param img_name: 图片名
     :param content: 新内容
     :param uuid: uuid
     :return: comment_id
@@ -545,9 +548,9 @@ def update_comment(comment_id: int, content: str, uuid: str) -> int:
         raise HttpError(403, '没有权限修改该评论')
 
     comment.content = content
+    comment.img_name = img_name
     db.session.commit()
 
-    return comment.comment_id
 
 
 def delete_comment(comment_id: int, uuid: str):

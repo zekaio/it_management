@@ -135,6 +135,8 @@
           </svg>
         </template>
       </van-nav-bar>
+
+      <!-- 输入框 -->
       <div class="detail_comment_container">
         <van-field
           id="comment_textarea"
@@ -147,6 +149,11 @@
           show-word-limit
         />
       </div>
+
+      <!-- 上传图片 -->
+      <div style=" margin: 1rem 24px 0 32px;">
+        <van-uploader preview-size="120" v-model="imageList" :max-count="1" />
+      </div>
     </div>
   </div>
 </template>
@@ -155,7 +162,7 @@
 import { Toast } from 'vant';
 
 import { apis } from '../api/apis';
-import { avatarDir } from '../config';
+import { avatarDir, commentImageDir } from '../config';
 
 import Comment from '../components/Comment';
 import Post from '../components/Post';
@@ -187,6 +194,8 @@ export default {
       hideInput: false,
 
       avatarDir,
+      commentImageDir,
+      imageList: [],
     };
   },
 
@@ -255,28 +264,41 @@ export default {
     // 提交评论
     submitComment() {
       if (!this.lock) {
+        if (this.commentText === '') {
+          Toast.fail({ commentText: '评论内容不能为空' });
+          return;
+        }
+
         this.lock = true;
         (() => {
+          let data = new FormData();
+
+          if (this.imageList.length) {
+            data.append('img', this.imageList[0].file);
+          }
+
           if (this.commentMode.edit) {
             // 编辑
-            return apis.updateComment(
-              this.commentMode.comment_id,
-              this.commentText
-            );
+            data.append('content', this.commentText);
+
+            return apis.updateComment(this.commentMode.comment_id, data);
           } else if (this.commentMode.parent) {
             // 回复主贴
-            return apis.saveComment(
-              this.isPost ? this.parent.post_id : this.parent.comment_id,
-              this.isPost ? 0 : 1,
-              this.commentText
+            data.append(
+              'parent_id',
+              this.isPost ? this.parent.post_id : this.parent.comment_id
             );
+            data.append('type', this.isPost ? 0 : 1);
+            data.append('content', this.commentText);
+
+            return apis.saveComment(data);
           } else {
             // 回复评论
-            return apis.saveComment(
-              this.commentMode.comment_id,
-              1,
-              this.commentText
-            );
+            data.append('parent_id', this.commentMode.comment_id);
+            data.append('type', 1);
+            data.append('content', this.commentText);
+
+            return apis.saveComment(data);
           }
         })()
           .then(() => {
@@ -320,6 +342,7 @@ export default {
       this.commentText = '';
       this.commentShow = false;
       this.commentMode = { edit: false, comment_id: 0, parent: true };
+      this.imageList = [];
     },
 
     // 删除评论
@@ -331,6 +354,20 @@ export default {
     // 修改评论
     editCommentEventHandler(index) {
       let comment = this.comments[index];
+      if (comment.img_name) {
+        fetch(this.commentImageDir + comment.img_name)
+          .then((res) => res.blob())
+          .then((res) => {
+            const file = new File([res], comment.img_name, { type: res.type });
+            this.imageList = [
+              {
+                url: this.commentImageDir + comment.img_name,
+                isImage: true,
+                file,
+              },
+            ];
+          });
+      }
       this.commentText = comment.content;
       this.commentMode = { edit: true, comment_id: comment.comment_id };
       this.commentShow = true;
@@ -401,7 +438,7 @@ export default {
 }
 .detail_bar {
   position: fixed;
-  z-index: 2017;
+  z-index: 1000;
   bottom: 0;
   left: 0;
   right: 0;

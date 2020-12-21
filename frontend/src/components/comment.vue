@@ -47,6 +47,13 @@
         >:
       </span>
       <span>{{ comment.content }}</span>
+      <!-- 图片 -->
+      <span
+        style=" color: #1E90FF; margin-left:8px;"
+        v-if="comment.img_name"
+        @click="previewImage($event, commentImageDir + comment.img_name)"
+        >查看图片</span
+      >
     </div>
 
     <!-- 弹出层 -->
@@ -64,10 +71,10 @@
 </template>
 
 <script>
-import { Dialog, Toast } from 'vant';
+import { Dialog, Toast, ImagePreview } from 'vant';
 
 import { apis } from '../api/apis';
-import { avatarDir } from '../config';
+import { avatarDir, commentImageDir } from '../config';
 
 export default {
   name: 'Comment',
@@ -81,6 +88,7 @@ export default {
     return {
       actionSheetShow: false,
       avatarDir,
+      commentImageDir,
       actions: [{ name: '编辑' }, { name: '删除', color: '#ee0a24' }],
     };
   },
@@ -119,6 +127,13 @@ export default {
 
     replyComment() {
       this.$emit('replyCommentEvent', this.index);
+    },
+
+    // 预览图片
+    previewImage(e, img_url) {
+      e.stopPropagation();
+      e.preventDefault();
+      ImagePreview({ images: [img_url], showIndex: false });
     },
   },
 

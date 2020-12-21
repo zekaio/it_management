@@ -1,10 +1,11 @@
 from flask import Blueprint, request, session
+from werkzeug.datastructures import FileStorage
 
 from app.extends.result import Result
 from app.services import database
-from app.models.controller import CommentModel
-from app.extends.helper import check_post_or_comment_content
+from app.extends.helper import check_post_or_comment_content, save_image
 from app.extends.error import HttpError
+from app.config import BaseConfig
 
 comments_bp = Blueprint('comments', __name__, url_prefix='/comments')
 
@@ -107,25 +108,21 @@ def save_comment():
         "status": 200
     }
     """
-    comment: CommentModel = CommentModel.get_parameters()
+    content: str = request.form.get('content')
+    ret = check_post_or_comment_content(content)
+    if ret is not True:
+        raise HttpError(400, ret)
 
-    ret = database.save_comment(
-        content=comment.content,
-        parent_id=comment.parent_id,
-        _type=comment.type,
-        uuid=session.get('uuid')
-    )
+    parent_id: int = request.form.get('parent_id')
+    _type: int = request.form.get('type')
 
-    return Result.OK().data({
-        'comment_id': ret[0],
-        'username': ret[1],
-        'uuid': ret[2],
-        'comments': [],
-        'comments_num': 0,
-        'created_at': ret[3],
-        'avatar': ret[4],
-        **comment.to_dict()
-    }).build()
+    img: FileStorage = request.files.get('img')
+    img_name = None if img is None else save_image(BaseConfig.comment_image_dir, img)
+
+    database.save_comment(content=content, parent_id=parent_id, _type=_type, img_name=img_name,
+                          uuid=session.get('uuid'))
+
+    return Result.OK().build()
 
 
 @comments_bp.route('/<int:comment_id>', methods=['PUT'])
@@ -142,18 +139,17 @@ def update_comment(comment_id: int):
         "status": 200
     }
     """
-    content: str = request.get_json(force=True).get('content')
+    content: str = request.form.get('content')
     ret = check_post_or_comment_content(content)
     if ret is not True:
         raise HttpError(400, ret)
 
-    return Result.OK().data({
-        'comment_id': database.update_comment(
-            content=content,
-            comment_id=comment_id,
-            uuid=session.get('uuid')
-        )
-    }).build()
+    img: FileStorage = request.files.get('img')
+    img_name = None if img is None else save_image(BaseConfig.comment_image_dir, img)
+
+    database.update_comment(content=content, img_name=img_name, comment_id=comment_id, uuid=session.get('uuid'))
+
+    return Result.OK().build()
 
 
 @comments_bp.route('/<int:comment_id>', methods=['DELETE'])

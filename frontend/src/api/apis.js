@@ -299,15 +299,15 @@ apis.getComment = (comment_id, last_comment_id = 0, limit = 10) => {
 /**
  * 发表评论
  * POST /comments
- * @param {number} parent_id - 被评论的帖子或评论的id
- * @param {number} type - 是什么的评论，0是帖子，1是评论
- * @param {string} content - 内容
+ * @param {string} data - formdata 包含图片和文字
  */
-apis.saveComment = (parent_id, type, content) => {
+apis.saveComment = (data) => {
   return instance({
     url: '/comments',
     method: 'post',
-    data: JSON.stringify({ parent_id, type, content }),
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data,
+    showLoading: true,
   });
 };
 
@@ -315,13 +315,15 @@ apis.saveComment = (parent_id, type, content) => {
  * 修改评论
  * PUT /comments/{commend_id}
  * @param {number} comment_id - 评论id
- * @param {string} content - 新内容
+ * @param {string} data - formdata 包含图片和文字
  */
-apis.updateComment = (comment_id, content) => {
+apis.updateComment = (comment_id, data) => {
   return instance({
     url: `/comments/${comment_id}`,
     method: 'put',
-    data: JSON.stringify({ content }),
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data,
+    showLoading: true,
   });
 };
 
